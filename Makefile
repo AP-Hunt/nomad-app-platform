@@ -1,40 +1,43 @@
-install: nomad consul etcd
+install: bin/nomad bin/consul bin/etcd
 
-nomad:
-	wget -O nomad.zip "https://releases.hashicorp.com/nomad/1.1.2/nomad_1.1.2_linux_amd64.zip"
-	unzip nomad.zip
-	rm nomad.zip
+bin/:
+	[ -d bin/ ] || mkdir bin/
 
-consul:
-	wget -O consul.zip "https://releases.hashicorp.com/consul/1.10.1/consul_1.10.1_linux_amd64.zip"
-	unzip consul.zip
-	rm consul.zip
+bin/nomad: bin/
+	wget --quiet -O bin/nomad.zip "https://releases.hashicorp.com/nomad/1.1.2/nomad_1.1.2_linux_amd64.zip"
+	unzip -f bin/nomad.zip -d bin/
+	rm bin/nomad.zip
 
-etcd:
-	wget -O etcd.tar.gz "https://github.com/etcd-io/etcd/releases/download/v3.5.0/etcd-v3.5.0-linux-amd64.tar.gz"
-	tar -xzvf etcd.tar.gz --strip-components=1 \
+bin/consul: bin/
+	wget --quiet -O bin/consul.zip "https://releases.hashicorp.com/consul/1.10.1/consul_1.10.1_linux_amd64.zip"
+	unzip -f bin/consul.zip -d bin/
+	rm bin/consul.zip
+
+bin/etcd: bin/
+	wget --quiet -O bin/etcd.tar.gz "https://github.com/etcd-io/etcd/releases/download/v3.5.0/etcd-v3.5.0-linux-amd64.tar.gz"
+	tar -xzvf bin/etcd.tar.gz -C bin/ --strip-components=1 \
 	  etcd-v3.5.0-linux-amd64/etcdutl \
 	  etcd-v3.5.0-linux-amd64/etcdctl \
 	  etcd-v3.5.0-linux-amd64/etcd
-	rm etcd.tar.gz
+	rm bin/etcd.tar.gz
 
 start: install
 	vagrant up server-1 --provision
 	vagrant up client-1 client-2 --provision
-	vagrant ssh server-1 -c "/vagrant/nomad server members"
+	vagrant ssh server-1 -c "/vagrant/bin/nomad server members"
 
 deploy: nomad registry ingress
 
 ingress:
-	@./nomad job run ./ingress.hcl
+	@./bin/nomad job run ./ingress.hcl
 
 echo:
-	@./nomad job run ./echo.hcl && \
+	@./bin/nomad job run ./echo.hcl && \
 	until [ "$$(dig -t ANY echo.service.apps.internal +short)" != "" ]; do echo "Waiting for DNS"; sleep 10; done;
 	dig -t ANY echo.service.apps.internal +short
 
 registry:
-	@./nomad job run ./container-registry.hcl && \
+	@./bin/nomad job run ./container-registry.hcl && \
 	until [ "$$(dig -t ANY registry.service.apps.internal +short)" != "" ]; do echo "Waiting for DNS"; sleep 10; done;
 	dig -t ANY registry.service.apps.internal +short
 
@@ -61,13 +64,13 @@ build-php-app:
 	docker push registry.service.apps.internal:5000/containers/php-app:latest
 
 run-test-app:
-	./nomad job run ./test-app.hcl
+	./bin/nomad job run ./test-app.hcl
 
 curl-test-app:
 	curl -v test-app.service.apps.internal:8080
 
 run-php-app:
-	@./nomad job run ./php-app.hcl && \
+	@./bin/nomad job run ./php-app.hcl && \
 	until [ "$$(dig -t ANY php-app.service.apps.internal +short)" != "" ]; do echo "Waiting for DNS"; sleep 10; done;
 	@echo "Fetching DNS entries"
 	@dig -t ANY php-app.service.apps.internal +short

@@ -12,7 +12,7 @@ After=consul.service
 
 [Service]
 ExecReload=/bin/kill -HUP $MAINPID
-ExecStart=/vagrant/nomad agent -bind "${NOMAD_BIND_IP}:4646" -log-level DEBUG -config /vagrant/nomad.server.hcl server
+ExecStart=/vagrant/bin/nomad agent -bind "${NOMAD_BIND_IP}:4646" -log-level DEBUG -config /vagrant/nomad.server.hcl server
 KillMode=process
 KillSignal=SIGINT
 LimitNOFILE=65536

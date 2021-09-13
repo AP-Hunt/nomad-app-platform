@@ -8,7 +8,7 @@ After=network-online.target
 Type=notify
 #User=consul
 #Group=consul
-ExecStart=/vagrant/consul agent -dev -config-dir=/vagrant/consul.d
+ExecStart=/vagrant/bin/consul agent -dev -config-dir=/vagrant/consul.d
 ExecReload=/bin/kill --signal HUP $MAINPID
 KillMode=process
 KillSignal=SIGTERM

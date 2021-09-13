@@ -4,3 +4,4 @@ consul
 etcd*
 .vagrant
 nomad-data-dir
+bin/
