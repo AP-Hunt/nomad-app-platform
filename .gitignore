@@ -1,7 +1,5 @@
-nomad
-consul
+bin/*
 *.log
-etcd*
 .vagrant
 nomad-data-dir
 bin/

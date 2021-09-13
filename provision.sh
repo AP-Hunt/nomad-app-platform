@@ -2,16 +2,19 @@
 
 MODE=$1
 NEW_HOSTNAME=$2
-export NOMAD_BIND_IP=$3
+export BIND_IP=$3
 
 NOMAD_SYSTEMD_FILE=""
+CONSUL_SYSTEMD_FILE=""
 case $MODE in
 "server")
-  NOMAD_SYSTEMD_FILE="/vagrant/nomad.server.systemd"
+  NOMAD_SYSTEMD_FILE="/vagrant/config/nomad/nomad.server.systemd"
+  CONSUL_SYSTEMD_FILE="/vagrant/config/consul/consul.server.systemd"
   ;;
 
 "client")
-  NOMAD_SYSTEMD_FILE="/vagrant/nomad.client.systemd"
+  NOMAD_SYSTEMD_FILE="/vagrant/config/nomad/nomad.client.systemd"
+  CONSUL_SYSTEMD_FILE="/vagrant/config/consul/consul.client.systemd"
   ;;
 
 *)
@@ -58,7 +61,6 @@ make install
 progress "Configuring Nomad"
 # Courtesy of https://learn.hashicorp.com/tutorials/nomad/production-deployment-guide-vm-with-consul#configure-systemd
 cat "${NOMAD_SYSTEMD_FILE}" | envsubst > /etc/systemd/system/nomad.service
-# cp "${NOMAD_SYSTEMD_FILE}" /etc/systemd/system/nomad.service
 
 systemctl daemon-reload
 systemctl start nomad
@@ -67,7 +69,7 @@ systemctl enable nomad
 ############################
 progress "Configuring Consul"
 # Courtesy of https://learn.hashicorp.com/tutorials/consul/deployment-guide#configure-systemd
-cp /vagrant/consul.systemd /etc/systemd/system/consul.service
+cat "${CONSUL_SYSTEMD_FILE}" | envsubst > /etc/systemd/system/consul.service
 
 systemctl daemon-reload
 systemctl start consul
@@ -75,7 +77,7 @@ systemctl enable consul
 
 ############################
 progress "Configuring Etcd"
-cp /vagrant/etcd.systemd /etc/systemd/system/etcd.service
+cp /vagrant/config/etcd/etcd.systemd /etc/systemd/system/etcd.service
 
 systemctl daemon-reload
 systemctl start etcd
