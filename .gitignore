@@ -1,0 +1,6 @@
+nomad
+consul
+*.log
+etcd*
+.vagrant
+nomad-data-dir
