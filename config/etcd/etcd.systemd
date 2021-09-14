@@ -6,7 +6,7 @@ After=network-online.target
 
 [Service]
 ExecReload=/bin/kill -HUP $MAINPID
-ExecStart=/vagrant/etcd --log-level debug
+ExecStart=/vagrant/bin/etcd --log-level debug
 KillMode=process
 KillSignal=SIGINT
 LimitNOFILE=65536
