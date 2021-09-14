@@ -3,3 +3,4 @@ bin/*
 .vagrant
 nomad-data-dir
 bin/
+vendor

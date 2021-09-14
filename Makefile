@@ -5,19 +5,23 @@ ETCD_EXE 	= $(BIN_DIR)/etcd
 
 install: $(NOMAD_EXE) $(CONSUL_EXE) $(ETCD_EXE)
 
-$(NOMAD_EXE):
+inside_vagrant_vm:
+	# This isn't a perfect test, but it'll do
+	[ -d "/home/vagrant" ] || (echo "Must be inside the Vagrant VM before running " && false)
+
+$(NOMAD_EXE): inside_vagrant_vm
 	[ -d $(BIN_DIR) ] || mkdir -p $(BIN_DIR)
 	wget --quiet -O bin/nomad.zip "https://releases.hashicorp.com/nomad/1.1.2/nomad_1.1.2_linux_amd64.zip"
 	unzip bin/nomad.zip -d bin/
 	rm bin/nomad.zip
 
-$(CONSUL_EXE):
+$(CONSUL_EXE): inside_vagrant_vm
 	[ -d $(BIN_DIR) ] || mkdir -p $(BIN_DIR)
 	wget --quiet -O bin/consul.zip "https://releases.hashicorp.com/consul/1.10.1/consul_1.10.1_linux_amd64.zip"
 	unzip bin/consul.zip -d bin/
 	rm bin/consul.zip
 
-$(ETCD_EXE):
+$(ETCD_EXE): inside_vagrant_vm
 	[ -d $(BIN_DIR) ] || mkdir -p $(BIN_DIR)
 	wget --quiet -O bin/etcd.tar.gz "https://github.com/etcd-io/etcd/releases/download/v3.5.0/etcd-v3.5.0-linux-amd64.tar.gz"
 	tar -xzvf bin/etcd.tar.gz -C bin/ --strip-components=1 \
