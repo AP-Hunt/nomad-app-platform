@@ -1,19 +1,24 @@
-install: bin/nomad bin/consul bin/etcd
+BIN_DIR		= bin
+NOMAD_EXE 	?= $(BIN_DIR)/nomad
+CONSUL_EXE 	= $(BIN_DIR)/consul
+ETCD_EXE 	= $(BIN_DIR)/etcd
 
-bin/:
-	[ -d bin/ ] || mkdir bin/
+install: $(NOMAD_EXE) $(CONSUL_EXE) $(ETCD_EXE)
 
-bin/nomad: bin/
+$(NOMAD_EXE):
+	[ -d $(BIN_DIR) ] || mkdir -p $(BIN_DIR)
 	wget --quiet -O bin/nomad.zip "https://releases.hashicorp.com/nomad/1.1.2/nomad_1.1.2_linux_amd64.zip"
-	unzip -f bin/nomad.zip -d bin/
+	unzip bin/nomad.zip -d bin/
 	rm bin/nomad.zip
 
-bin/consul: bin/
+$(CONSUL_EXE):
+	[ -d $(BIN_DIR) ] || mkdir -p $(BIN_DIR)
 	wget --quiet -O bin/consul.zip "https://releases.hashicorp.com/consul/1.10.1/consul_1.10.1_linux_amd64.zip"
-	unzip -f bin/consul.zip -d bin/
+	unzip bin/consul.zip -d bin/
 	rm bin/consul.zip
 
-bin/etcd: bin/
+$(ETCD_EXE):
+	[ -d $(BIN_DIR) ] || mkdir -p $(BIN_DIR)
 	wget --quiet -O bin/etcd.tar.gz "https://github.com/etcd-io/etcd/releases/download/v3.5.0/etcd-v3.5.0-linux-amd64.tar.gz"
 	tar -xzvf bin/etcd.tar.gz -C bin/ --strip-components=1 \
 	  etcd-v3.5.0-linux-amd64/etcdutl \
@@ -21,7 +26,7 @@ bin/etcd: bin/
 	  etcd-v3.5.0-linux-amd64/etcd
 	rm bin/etcd.tar.gz
 
-start: install
+start:
 	vagrant up server-1 --provision
 	vagrant up client-1 client-2 --provision
 	vagrant ssh server-1 -c "/vagrant/bin/nomad server members"
