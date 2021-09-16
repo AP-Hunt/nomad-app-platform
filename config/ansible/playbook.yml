@@ -1,0 +1,10 @@
+---
+- hosts: servers
+  tasks:
+    - ansible.builtin.debug:
+        msg: "Hello from servers"
+
+- hosts: clients
+  tasks:
+    - ansible.builtin.debug:
+        msg: "Hello from clients"
