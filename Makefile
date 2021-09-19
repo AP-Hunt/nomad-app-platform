@@ -31,9 +31,8 @@ $(ETCD_EXE): inside_vagrant_vm
 	rm bin/etcd.tar.gz
 
 start:
-	vagrant up server-1 --provision
-	vagrant up client-1 client-2 --provision
-	vagrant ssh server-1 -c "/vagrant/bin/nomad server members"
+	vagrant up 
+	vagrant ssh node-1 -c "curl http://localhost:8500/v1/catalog/nodes"
 
 deploy: nomad registry ingress
 

@@ -6,15 +6,16 @@ After=network-online.target
 
 [Service]
 Type=notify
-#User=consul
-#Group=consul
-ExecStart=/vagrant/bin/consul agent -server -config-dir=/vagrant/config/consul/consul.d -log-level DEBUG -config-file /vagrant/config/consul/consul.server.hcl -bind "${BIND_IP}"
+User=consul
+Group=consul
+ExecStart=/opt/consul/bin/consul agent {{"-server" if type == "server" else "" }} -config-dir=/opt/consul/consul.d -log-level DEBUG -config-file /opt/consul/listen.hcl
 ExecReload=/bin/kill --signal HUP $MAINPID
 KillMode=process
 KillSignal=SIGTERM
 Restart=on-failure
 LimitNOFILE=65536
 RestartSec=10
+TimeoutSec=300
 
 StartLimitBurst = 3
 StartLimitInterval = 10s

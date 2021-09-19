@@ -2,5 +2,5 @@ datacenter = "dev"
 log_level  = "INFO"
 domain     = "apps.internal"
 alt_domain = "paas.dev"
-data_dir = "/opt/consul/"
+data_dir = "/opt/consul/data/"
 rejoin_after_leave = true

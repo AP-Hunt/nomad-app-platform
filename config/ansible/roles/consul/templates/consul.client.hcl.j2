@@ -1,0 +1,7 @@
+advertise_addr="{{listen_ip}}"
+bind_addr="0.0.0.0"
+node_name="{{type}}-{{listen_ip | regex_replace("\.", "-")}}"
+
+server = false
+retry_join = {{server_ips | to_json }}
+retry_interval = "30s"

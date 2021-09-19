@@ -1,0 +1,93 @@
+---
+- name: "Create Consul user and group"
+  become: true
+  block:
+    - ansible.builtin.group:
+        name: "consul"
+        system: true
+
+    - ansible.builtin.user:
+        name: "consul"
+        groups:
+          - consul
+        create_home: false
+        system: true
+
+- name: "Install Consul binaries"
+  become: true
+  block:
+    - name: "Create directories"
+      ansible.builtin.file:
+        path: "{{item}}"
+        state: directory
+        owner: consul
+        group: consul
+      loop:
+        - "/opt/consul"
+        - "/opt/consul/bin"
+        - "/opt/consul/data"
+
+    - name: "Copy binary"
+      ansible.builtin.copy:
+        remote_src: true
+        src: /vagrant/bin/consul
+        dest: /opt/consul/bin/consul
+        owner: consul
+        group: consul
+        mode: "771"
+
+- name: "Configure Consul"
+  become: true
+  become_user: root
+  block:
+    - name: "Create listen.hcl"
+      ansible.builtin.template:
+        src: consul.{{type}}.hcl.j2
+        dest: /opt/consul/listen.hcl
+        owner: consul
+        group: consul
+        mode: "644"
+
+    - name: "Copy consul.d/"
+      ansible.builtin.copy:
+        remote_src: true
+        src: /vagrant/config/consul/consul.d
+        dest: /opt/consul/
+        owner: consul
+        group: consul
+        mode: "775"
+
+    - name: "Set consul.d/ mode"
+      ansible.builtin.file:
+        path: /opt/consul/consul.d
+        state: directory
+        recurse: true
+        owner: consul
+        group: consul
+        mode: "u=rwX,g=rX,o=rX"
+
+- name: "Configure Systemd"
+  become: true
+  become_user: root
+  block:
+    - name: "Create consul.service"
+      become_user: root
+      ansible.builtin.template:
+        src: consul.systemd.j2
+        dest: /etc/systemd/system/consul.service
+        owner: root
+        group: root
+        mode: "644"
+
+    - name: "Enable Consul daemon"
+      ansible.builtin.systemd:
+        daemon_reload: true
+        enabled: true
+        name: consul
+
+    - name: "Restart Consul daemon"
+      ansible.builtin.systemd:
+        daemon_reload: true
+        enabled: true
+        name: consul
+        state: restarted

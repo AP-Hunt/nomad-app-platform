@@ -1,10 +1,51 @@
 ---
-- hosts: servers
+- hosts: all
   tasks:
-    - ansible.builtin.debug:
-        msg: "Hello from servers"
+    - become: true
+      become_user: root
+      ansible.builtin.apt:
+        update_cache: true
+        name: zip
 
-- hosts: clients
-  tasks:
-    - ansible.builtin.debug:
-        msg: "Hello from clients"
+    - ansible.builtin.file:
+        state: directory
+        path: /vagrant/bin
+
+    - ansible.builtin.stat:
+        path: /vagrant/bin/nomad
+      register: nomad_exe
+
+    - name: "Download Nomad"
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: https://releases.hashicorp.com/nomad/1.1.2/nomad_1.1.2_linux_amd64.zip
+        dest: /vagrant/bin/
+      when: nomad_exe.stat.exists == false
+
+    - ansible.builtin.stat:
+        path: /vagrant/bin/consul
+      register: consul_exe
+
+    - name: "Download Consul"
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: https://releases.hashicorp.com/consul/1.10.2/consul_1.10.2_linux_amd64.zip
+        dest: /vagrant/bin/
+      when: consul_exe.stat.exists == false
+
+- hosts: consul_servers
+  roles:
+    - role: consul
+      vars:
+        listen_ip: "{{ hostvars[inventory_hostname].private_ip }}"
+        type: server
+        num_servers: "{{ groups['consul_servers'] | length }}"
+        server_ips: "{{ hostvars | json_query('*.private_ip') }}"
+
+# - hosts: clients
+#   roles:
+#     - role: consul
+#       vars:
+#         listen_ip: "{{ansible_all_ipv4_addresses[1]}}"
+#         type: client
+#         server_ips: ["192.168.33.10"]
