@@ -5,15 +5,27 @@
 instances = [
   {
     :hostname => "node-1",
-    :ip => "192.168.33.10"
+    :ip => "192.168.33.10",
+    :roles => [
+      :consul_server,
+      :nomad_server
+    ]
   },
   {
     :hostname => "node-2",
-    :ip => "192.168.33.11"
+    :ip => "192.168.33.11",
+    :roles => [
+      :consul_server,
+      :nomad_client
+    ]
   },
   {
     :hostname => "node-3",
-    :ip => "192.168.33.12"
+    :ip => "192.168.33.12",
+    :roles => [
+      :consul_server,
+      :nomad_client
+    ]
   },
 ]
 
@@ -38,9 +50,7 @@ Vagrant.configure("2") do |config|
 
           ansible.limit = "all"
           ansible.playbook = "config/ansible/playbook.yml"
-          ansible.groups = {
-            "consul_servers" => ["node-1", "node-2", "node-3"],
-          }
+          ansible.groups = build_ansible_groups(instances)
 
           host_vars = {}
 
@@ -55,4 +65,16 @@ Vagrant.configure("2") do |config|
       end
     end
   end
+end
+
+def build_ansible_groups(instances)
+  return {
+    "consul_servers" => filter_by_role(instances, :consul_server),
+    "nomad_servers" => filter_by_role(instances, :nomad_server),
+    "nomad_clients" => filter_by_role(instances, :nomad_client),
+  }
+end
+
+def filter_by_role(is, role)
+  return is.select { |i|  i[:roles].include?(role) }.map{|i| i[:hostname]}
 end

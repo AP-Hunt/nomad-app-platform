@@ -1,0 +1,17 @@
+name="{{type}}-{{listen_ip | regex_replace("\.", "-")}}"
+
+client {
+    enabled = true
+    servers = {{server_ips | to_json }}
+}
+
+ports {
+    http = 4646
+}
+
+bind_addr="0.0.0.0"
+advertise {
+    http = "{{listen_ip}}"
+    rpc = "{{listen_ip}}"
+    serf = "{{listen_ip}}"
+}

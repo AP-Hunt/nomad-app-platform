@@ -1,0 +1,93 @@
+---
+- name: "Create Nomad user and group"
+  become: true
+  block:
+    - ansible.builtin.group:
+        name: "nomad"
+        system: true
+
+    - ansible.builtin.user:
+        name: "nomad"
+        groups:
+          - nomad
+        create_home: false
+        system: true
+
+- name: "Install Nomad binaries"
+  become: true
+  block:
+    - name: "Create directories"
+      ansible.builtin.file:
+        path: "{{item}}"
+        state: directory
+        owner: nomad
+        group: nomad
+      loop:
+        - "/opt/nomad"
+        - "/opt/nomad/bin"
+        - "/opt/nomad/data"
+
+    - name: "Copy binary"
+      ansible.builtin.copy:
+        remote_src: true
+        src: /vagrant/bin/nomad
+        dest: /opt/nomad/bin/nomad
+        owner: nomad
+        group: nomad
+        mode: "771"
+
+- name: "Configure Nomad"
+  become: true
+  become_user: root
+  block:
+    - name: "Create listen.hcl"
+      ansible.builtin.template:
+        src: nomad.{{type}}.hcl.j2
+        dest: /opt/nomad/listen.hcl
+        owner: nomad
+        group: nomad
+        mode: "644"
+
+    - name: "Copy nomad.d/"
+      ansible.builtin.copy:
+        remote_src: true
+        src: /vagrant/config/nomad/nomad.d
+        dest: /opt/nomad/
+        owner: nomad
+        group: nomad
+        mode: "775"
+
+    - name: "Set nomad.d/ mode"
+      ansible.builtin.file:
+        path: /opt/nomad/nomad.d
+        state: directory
+        recurse: true
+        owner: nomad
+        group: nomad
+        mode: "u=rwX,g=rX,o=rX"
+
+- name: "Configure Systemd"
+  become: true
+  become_user: root
+  block:
+    - name: "Create nomad.service"
+      become_user: root
+      ansible.builtin.template:
+        src: nomad.systemd.j2
+        dest: /etc/systemd/system/nomad.service
+        owner: root
+        group: root
+        mode: "644"
+
+    - name: "Enable nomad daemon"
+      ansible.builtin.systemd:
+        daemon_reload: true
+        enabled: true
+        name: nomad
+
+    - name: "Restart nomad daemon"
+      ansible.builtin.systemd:
+        daemon_reload: true
+        enabled: true
+        name: nomad
+        state: restarted

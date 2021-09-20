@@ -1,0 +1,13 @@
+name="{{type}}-{{listen_ip | regex_replace("\.", "-")}}"
+
+server {
+    enabled = true
+    bootstrap_expect = {{num_servers}}
+}
+
+bind_addr="0.0.0.0"
+advertise {
+    http = "{{listen_ip}}"
+    rpc = "{{listen_ip}}"
+    serf = "{{listen_ip}}"
+}

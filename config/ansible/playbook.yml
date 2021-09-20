@@ -41,11 +41,21 @@
         type: server
         num_servers: "{{ groups['consul_servers'] | length }}"
         server_ips: "{{ hostvars | json_query('*.private_ip') }}"
+    
+- hosts: nomad_servers
+  roles: 
+    - role: nomad
+      vars:
+        listen_ip: "{{ hostvars[inventory_hostname].private_ip }}"
+        type: server
+        num_servers: "{{ groups['nomad_servers'] | length }}"
+        server_ips: "{{ hostvars | json_query('*.private_ip') }}"
 
-# - hosts: clients
-#   roles:
-#     - role: consul
-#       vars:
-#         listen_ip: "{{ansible_all_ipv4_addresses[1]}}"
-#         type: client
-#         server_ips: ["192.168.33.10"]
+- hosts: nomad_clients
+  roles:
+    - role: nomad
+      vars:
+        listen_ip: "{{ hostvars[inventory_hostname].private_ip }}"
+        type: client
+        num_servers: "{{ groups['nomad_servers'] | length }}"
+        server_ips: "{{ hostvars | json_query('*.private_ip') }}"
