@@ -33,3 +33,25 @@
   ansible.builtin.apt:
     update_cache: true
     name: pack-cli
+
+- ansible.builtin.stat:
+    path: /usr/local/bin/go/bin/go
+  register: go_exe
+
+- name: "Install Golang"
+  become: true
+  become_user: root
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: https://golang.org/dl/go1.17.1.linux-amd64.tar.gz
+    dest: /usr/local/bin
+  when: go_exe.stat.exists == false
+
+- name: "Install development packages"
+  become: true
+  become_user: root
+  ansible.builtin.apt:
+    update_cache: true
+    name: 
+      - make
+      - build-essential
