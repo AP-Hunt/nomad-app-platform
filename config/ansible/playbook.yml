@@ -33,6 +33,10 @@
         dest: /vagrant/bin/
       when: consul_exe.stat.exists == false
 
+- hosts: all
+  roles:
+    - vagrant-user
+
 - hosts: consul_servers
   roles:
     - role: consul

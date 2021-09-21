@@ -1,0 +1,14 @@
+---
+- name: "Add profile.d files"
+  become: true
+  become_user: root
+  ansible.builtin.copy:
+    src: profile.d/
+    dest: /etc/profile.d/
+    mode: "644"
+
+- name: "Set hostname"
+  become: true
+  become_user: root
+  ansible.builtin.hostname:
+    name: "{{inventory_hostname}}"
