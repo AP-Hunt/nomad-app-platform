@@ -1,0 +1,60 @@
+---
+- name: "Install dependency packages"
+  become: true
+  become_user: root
+  ansible.builtin.apt:
+    update_cache: true
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+
+- name: "Add Docker GPG key"
+  become: true
+  become_user: root
+  ansible.builtin.apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+- name: "Add Docker repository"
+  become: true
+  become_user: root
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+
+- name: "Install Docker packages"
+  become: true
+  become_user: root
+  ansible.builtin.apt:
+    update_cache: true
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+
+- name: "Configure Docker for IPv6"
+  become: true
+  become_user: root
+  ansible.builtin.copy:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+
+- name: "Enable Docker in Systemd"
+  become: true
+  become_user: root
+  ansible.builtin.systemd:
+    name: docker
+    daemon_reload: true
+    state: restarted
+    enabled: true
+
+- name: "Enable Containerd in Systemd"
+  become: true
+  become_user: root
+  ansible.builtin.systemd:
+    name: containerd
+    daemon_reload: true
+    state: restarted
+    enabled: true    

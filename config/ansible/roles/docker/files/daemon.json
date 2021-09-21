@@ -1,0 +1,5 @@
+{ 
+    "ipv6": true, 
+    "fixed-cidr-v6": "fd00:1:1::/64", 
+    "insecure-registries": ["registry.service.apps.internal:5000"]
+}

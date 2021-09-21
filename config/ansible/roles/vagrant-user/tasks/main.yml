@@ -12,3 +12,11 @@
   become_user: root
   ansible.builtin.hostname:
     name: "{{inventory_hostname}}"
+
+- name: "Add Vagant user to Docker group"
+  become: true
+  become_user: root
+  ansible.builtin.user:
+    name: vagrant
+    groups:
+      - docker
