@@ -1,0 +1,42 @@
+---
+- name: "Create resolved.conf.d/"
+  become: true
+  become_user: root
+  ansible.builtin.file:
+    state: directory
+    path: /etc/systemd/resolved.conf.d
+
+
+- name: "Insert Consul config for systemd-resolved"
+  become: true
+  become_user: root
+  ansible.builtin.copy:
+    content: |
+      DNS=127.0.0.1
+      Domains=~apps.internal ~paas.dev
+    dest: /etc/systemd/resolved.conf.d/consul.conf
+
+- name: "Forward port 53 (regular dns) to port 8600 (consul dns)"
+  become: true
+  become_user: root
+  ansible.builtin.iptables:
+    table: nat
+    action: append
+    chain: OUTPUT
+    destination: localhost
+    protocol: "{{item}}"
+    match: "{{item}}"
+    destination_port: "53"
+    jump: REDIRECT
+    to_ports: "8600"
+  loop:
+    - tcp
+    - udp
+
+- name: "Restart systemd-resolved"
+  become: true
+  become_user: root
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: systemd-resolved
+    state: restarted        

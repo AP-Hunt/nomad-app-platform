@@ -91,3 +91,5 @@
         enabled: true
         name: consul
         state: restarted
+
+- include_tasks: dns-resolver.yml
