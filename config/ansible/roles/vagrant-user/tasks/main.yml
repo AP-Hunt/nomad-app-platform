@@ -20,3 +20,16 @@
     name: vagrant
     groups:
       - docker
+
+- name: "Install Pack PPA"
+  become: true
+  become_user: root
+  ansible.builtin.apt_repository:
+    repo: "ppa:cncf-buildpacks/pack-cli"
+
+- name: "Install Pack CLI"
+  become: true
+  become_user: root
+  ansible.builtin.apt:
+    update_cache: true
+    name: pack-cli
