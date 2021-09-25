@@ -1,4 +1,6 @@
-﻿open System
+﻿module api
+
+open System
 open System.Threading
 open Suave
 
@@ -6,7 +8,13 @@ open Suave
 let main argv =
     let cts = new CancellationTokenSource()
     let conf = { defaultConfig with cancellationToken = cts.Token }
-    let _, server = startWebServerAsync conf (Successful.OK "Hello World")
+    
+    let app =
+        choose [
+            AppRoutes.routes
+        ]
+    
+    let _, server = startWebServerAsync conf app
     
     Async.Start(server, cts.Token)
     printfn "Server has started"

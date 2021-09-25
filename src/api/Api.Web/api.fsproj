@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Pagination.fs" />
+    <Compile Include="routes\PathHelpers.fs" />
+    <Compile Include="routes\ResponseHelpers.fs" />
+    <Compile Include="routes\Apps.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Suave" Version="2.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Api.Domain\Api.Domain.fsproj" />
+  </ItemGroup>
+
+</Project>
