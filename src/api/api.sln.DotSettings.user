@@ -1,2 +1,24 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
+  &lt;Assembly Path="/home/andy/.nuget/packages/sharpcompress/0.29.0/lib/net5.0/SharpCompress.dll" /&gt;
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2f429bb0_002D1076_002D4741_002D9656_002D3a361acfe40a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Returns an error when the file is not a valid gzipped tar archive" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::FF2FF39A-7A6F-4CB8-B74D-79851802CB26::net5.0::SourceArchiveTest.Returns an error when the file is not a valid gzipped tar archive&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=40f04615_002D540e_002D4434_002Db482_002D66e6835fabb8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=752f0ecb_002D2f60_002D4567_002Dbda5_002Dcf750123d4aa/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=e6641e81_002D8cb8_002D4d14_002D8fca_002D3331d90c9bb9/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="SourceArchiveTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::FF2FF39A-7A6F-4CB8-B74D-79851802CB26::net5.0::SourceArchiveTest+SourceArchiveTest&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f1b9fa47_002D0520_002D4ef0_002Db869_002D423164ffea31/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from Solution #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
+&lt;/SessionState&gt;</s:String>
 	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=48310dbc_002Dec0b_002D44ce_002Dacf5_002D82b3d3108cb5_0023api/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

@@ -8,6 +8,12 @@
 
   <ItemGroup>
     <Compile Include="Applications.fs" />
+    <Compile Include="SourceArchive.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SharpCompress" Version="0.29.0" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
   </ItemGroup>
 
 </Project>
