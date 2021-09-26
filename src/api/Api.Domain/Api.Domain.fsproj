@@ -8,12 +8,15 @@
 
   <ItemGroup>
     <Compile Include="Applications.fs" />
+    <Compile Include="ApplicationStores.fs" />
+    <Compile Include="ApplicationManifest.fs" />
     <Compile Include="SourceArchive.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="SharpCompress" Version="0.29.0" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
+    <PackageReference Include="YamlDotNet" Version="11.2.1" />
   </ItemGroup>
 
 </Project>

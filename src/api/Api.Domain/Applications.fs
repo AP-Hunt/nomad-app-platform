@@ -1,10 +1,13 @@
 namespace Api.Domain.Applications
 
+open System
+
 type Application =
     {
-        Id: string
+        Id: string option
         Name: string
     }
 
-// module Api.Domain.Applications
-
+module Applications =
+    let generateId application =
+        { application with Id = Some(Guid.NewGuid().ToString()) }
