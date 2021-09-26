@@ -2,10 +2,12 @@
 
 open Falco.HostBuilder
 
-[<EntryPoint>]
-let main argv =
-    webHost argv {
+let startWebHost args =
+    webHost args{
         endpoints Routes.all
     }
     
+[<EntryPoint>]
+let main argv =
+    startWebHost argv
     0

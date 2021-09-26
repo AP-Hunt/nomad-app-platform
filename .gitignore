@@ -4,3 +4,4 @@ bin/*
 nomad-data-dir
 bin/
 vendor
+*.user

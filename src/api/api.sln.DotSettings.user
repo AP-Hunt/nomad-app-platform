@@ -1,13 +1,22 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/home/andy/.nuget/packages/sharpcompress/0.29.0/lib/net5.0/SharpCompress.dll" /&gt;
+  &lt;Assembly Path="/home/andy/.nuget/packages/falco/3.1.7/lib/net5.0/Falco.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=220d74cb_002D8f2f_002D4f47_002Db70f_002D24fc42b4f581/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="POST /apps with an empty zip returns HTTP 400" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::0AC4BEF2-B02F-40BB-B955-859184C963D5::net5.0::Api.Web.Test.AppsEndpointsTest+AppsIndexTests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2f429bb0_002D1076_002D4741_002D9656_002D3a361acfe40a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Returns an error when the file is not a valid gzipped tar archive" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;NUnit3x::FF2FF39A-7A6F-4CB8-B74D-79851802CB26::net5.0::SourceArchiveTest.Returns an error when the file is not a valid gzipped tar archive&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=40f04615_002D540e_002D4434_002Db482_002D66e6835fabb8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=3cb3b08a_002Dc5d1_002D412d_002Da749_002D17813a2bc037/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from Solution #4" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=40f04615_002D540e_002D4434_002Db482_002D66e6835fabb8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from Solution #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Solution /&gt;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=752f0ecb_002D2f60_002D4567_002Dbda5_002Dcf750123d4aa/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
