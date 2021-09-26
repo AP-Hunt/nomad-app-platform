@@ -1,18 +1,14 @@
 module AppRoutes
-    open System.IO
+    open Microsoft.AspNetCore.Http
+    
+    open Falco
+    open Falco.Routing
     
     open Api.Domain.SourceArchive
-    open Suave
-    open Suave.Filters
-    open Suave.Json
-    open Suave.Operators
-    open Suave.Successful
-    
     open Api.Web.Pagination
     open Api.Domain.Applications
-    open PathHelpers
     open Pagination
-    open ResponseHelpers
+    
 
     let listOfApps =
         [
@@ -20,21 +16,30 @@ module AppRoutes
             { Application.Id = "456"; Name = "app-2"; }
         ]
     
-    let upload_app_handler request =
-        let tempFileStream = File.Open(request.files.Head.tempFilePath, FileMode.Open)
-        
-        match SourceArchive.validateArchive tempFileStream with
-        | Ok _ -> Successful.OK("valid")
-        | Error e -> RequestErrors.BAD_REQUEST("Invalid archive")
+    let apps_index_post : HttpHandler =
+        let formBinder (f : FormCollectionReader) : IFormFile option =
+            f.TryGetFormFile "source_bundle"
+            
+        let uploadToTempStore (sourceBundle : IFormFile option) : HttpHandler =
+            match sourceBundle with
+            | Some (bundle) ->
+                match SourceArchive.validateArchive (bundle.OpenReadStream()) with
+                | Ok _ ->
+                    Response.withStatusCode StatusCodes.Status202Accepted
+                    >> Response.ofJson {|Success = true; Error = "" |}
+                | Error e ->
+                    Response.withStatusCode StatusCodes.Status400BadRequest
+                    >> Response.ofJson {|Success = false; Error = e.ToString() |}
+            | None ->
+                Response.withStatusCode(StatusCodes.Status400BadRequest)
+                >> Response.ofJson {|Success = false; Error = "No archive uploaded"|} 
+            
+        Request.mapFormStream formBinder uploadToTempStore
     
-    let apps_index =
-        trailingSlashPath "/apps" >=> choose [
-            GET |> JSON (listOfApps |> paginatedCollectionOf)
-            POST >=> request upload_app_handler
-        ]
-
-    let routes =
-        choose
-            [
-                apps_index
-            ]
+    let apps_index_get : HttpHandler = Response.ofJson (listOfApps |> paginatedCollectionOf)
+    
+    let all = [
+        get "/apps" apps_index_get
+        post "/apps" apps_index_post
+    ]
+    
