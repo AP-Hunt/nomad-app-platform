@@ -11,6 +11,7 @@
     <Compile Include="ApplicationStores.fs" />
     <Compile Include="ApplicationManifest.fs" />
     <Compile Include="SourceArchive.fs" />
+    <Compile Include="Messages.fs" />
   </ItemGroup>
 
   <ItemGroup>

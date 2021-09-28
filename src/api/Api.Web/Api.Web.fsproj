@@ -12,6 +12,7 @@
   <ItemGroup>
     <Compile Include="Pagination.fs" />
     <Compile Include="EnvironmentService.fs" />
+    <Compile Include="MessageQueueService.fs" />
     <Compile Include="routes\Apps.fs" />
     <Compile Include="routes\Routes.fs" />
     <Compile Include="Program.fs" />
@@ -19,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="Falco" Version="3.1.7" />
+    <PackageReference Include="ServiceStack.Server" Version="5.12.0" />
   </ItemGroup>
 
   <ItemGroup>
