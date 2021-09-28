@@ -55,7 +55,7 @@ module AppRoutes
                 Response.withStatusCode StatusCodes.Status400BadRequest
                 >> Response.ofJson {|Success = false; Error = errMsg |}
                 
-            let uploadToTempStore (sourceBundle : IFormFile option) : HttpHandler =
+            let acceptAppUpload (sourceBundle : IFormFile option) : HttpHandler =
                 match sourceBundle with
                 | None -> errorResponse "No archive uploaded"
                 | Some (bundle) ->
@@ -78,7 +78,7 @@ module AppRoutes
                             Response.withStatusCode StatusCodes.Status202Accepted
                             >> Response.ofJson app
               
-            Request.mapFormStream formBinder uploadToTempStore ctx
+            Request.mapFormStream formBinder acceptAppUpload ctx
     
     let apps_index_get : HttpHandler =
         fun ctx ->
