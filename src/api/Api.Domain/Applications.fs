@@ -12,3 +12,6 @@ type Application =
 module Applications =
     let generateId application =
         { application with Id = Some(Guid.NewGuid().ToString()) }
+        
+    let incrementVersion application =
+        { application with Version = application.Version + 1}

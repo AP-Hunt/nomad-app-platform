@@ -32,7 +32,9 @@ module AppRoutes
                 | None -> Error("manifest parsing error")
         
             let createApplication manifest =
-                Ok {Application.Name = manifest.Name; Id = None; Version = 1}
+                match appStore.FindApplicationByName(manifest.Name) with
+                | Some(app) -> Ok app
+                | None -> Ok {Application.Name = manifest.Name; Id = None; Version = 1}
             
             let saveApplication (app : Application) : Result<Application, string> =
                 Ok(appStore.Save(app))
