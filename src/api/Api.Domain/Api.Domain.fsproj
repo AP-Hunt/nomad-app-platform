@@ -12,6 +12,8 @@
     <Compile Include="ApplicationManifest.fs" />
     <Compile Include="SourceArchive.fs" />
     <Compile Include="Messages.fs" />
+    <Compile Include="Buildpacks.fs" />
+    <Compile Include="ContainerImages.fs" />
   </ItemGroup>
 
   <ItemGroup>
