@@ -32,7 +32,7 @@ module AppRoutes
                 | None -> Error("manifest parsing error")
         
             let createApplication manifest =
-                Ok {Application.Name = manifest.Name; Id = None}
+                Ok {Application.Name = manifest.Name; Id = None; Version = 1}
             
             let saveApplication (app : Application) : Result<Application, string> =
                 Ok(appStore.Save(app))
@@ -41,10 +41,10 @@ module AppRoutes
                 let bundlePath = $"%s{blobStorePath}/%s{app.Id.Value}.zip"
                 use bundleDestinationStream = File.OpenWrite(bundlePath)
                 bundle.CopyTo(bundleDestinationStream)
-                Ok(app)
+                Ok((app, bundlePath))
                 
-            let publishDeployAppMessage (messageService : IMessageService) app =
-                let message = MessagePublishing.deployApp app
+            let publishDeployAppMessage (messageService : IMessageService) (app, blobStorePath) =
+                let message = MessagePublishing.deployApp app blobStorePath
                 try
                     messageService.MessageFactory.CreateMessageProducer().Publish message
                     Ok(app)

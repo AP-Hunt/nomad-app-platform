@@ -6,6 +6,7 @@ type Application =
     {
         Id: string option
         Name: string
+        Version: int
     }
 
 module Applications =
