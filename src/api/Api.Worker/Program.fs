@@ -7,10 +7,11 @@ open ServiceStack.Redis
 
 [<EntryPoint>]
 let main argv =
-    let redisFactory = new PooledRedisClientManager(Environment.GetEnvironmentVariable("MESSAGE_QUEUE_REDIS_ADDRESS"))
+    let config = Api.Config.Parsing.fromFile argv.[0]
+    let redisFactory = new PooledRedisClientManager(config.MessageQueue.RedisAddress)
     
     let messageQueueServer = new RedisMqServer(redisFactory)
-    messageQueueServer.RetryCount <- 2
+    messageQueueServer.RetryCount <- config.MessageQueue.RetryCount
     
     messageQueueServer.RegisterHandler<Api.Domain.Messages.DeployAppMessage>(Handlers.deployApplicationHandler)
     

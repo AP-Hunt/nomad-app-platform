@@ -11,8 +11,8 @@
 
   <ItemGroup>
     <Compile Include="Pagination.fs" />
-    <Compile Include="EnvironmentService.fs" />
     <Compile Include="MessageQueueService.fs" />
+    <Compile Include="Services.fs" />
     <Compile Include="routes\Apps.fs" />
     <Compile Include="routes\Routes.fs" />
     <Compile Include="Program.fs" />
@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Api.Config\Api.Config.fsproj" />
     <ProjectReference Include="..\Api.Domain\Api.Domain.fsproj" />
   </ItemGroup>
 

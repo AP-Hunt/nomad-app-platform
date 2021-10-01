@@ -2,5 +2,5 @@ module Routes
 
 open Falco.Core
 
-let all : HttpEndpoint list = [] @ AppRoutes.all
+let all services : HttpEndpoint list = [] @ (AppRoutes.all services)
 

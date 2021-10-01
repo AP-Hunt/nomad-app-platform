@@ -1,20 +1,22 @@
 ﻿module api
 
+open Api.Domain.Stores
 open Microsoft.Extensions.DependencyInjection
 
 open Api.Web.Services
 open Falco.HostBuilder
 
-let startWebHost args =
+let startWebHost (args : string[]) = 
+    let config = Api.Config.Parsing.fromFile (args.[0])
     
-    let environmentService = new EnvironmentService()
+    let services = {
+        AppStore = (InMemoryApplicationStore() :> IApplicationStore)
+        Configuration = config;
+        MessageQueue = (MessageQueueService.configure config)
+    }
     
-    webHost args{
-        endpoints Routes.all
-        add_service (fun services ->  services.AddSingleton(environmentService))
-        add_service (fun services ->  services.AddScoped<ServiceStack.Messaging.IMessageService>(fun provider ->
-            (MessageQueueService.configure environmentService) :> ServiceStack.Messaging.IMessageService
-        ))
+    webHost args {
+        endpoints (Routes.all services)
     }
     
 [<EntryPoint>]

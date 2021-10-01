@@ -1,12 +1,11 @@
 module MessageQueueService
 
-open Api.Web.Services
 open ServiceStack.Redis
 open ServiceStack.Messaging.Redis
 
-let configure (environment : EnvironmentService) =
-    let redisFactory = new PooledRedisClientManager(environment.MessageQueueRedisAddress)
+let configure (config : Api.Config.Configuration) =
+    let redisFactory = new PooledRedisClientManager(config.MessageQueue.RedisAddress)
     let messageQueue = new RedisMqServer(redisFactory)
-    messageQueue.RetryCount <- 2
+    messageQueue.RetryCount <- config.MessageQueue.RetryCount
     messageQueue
 

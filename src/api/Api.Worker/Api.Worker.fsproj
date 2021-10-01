@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Api.Config\Api.Config.fsproj" />
       <ProjectReference Include="..\Api.Domain\Api.Domain.fsproj" />
     </ItemGroup>
 

@@ -28,3 +28,6 @@ docker_registry:
 stop_docker_registry:
 	docker kill nomad-app-platform.api.docker-registry
 	docker rm nomad-app-platform.api.docker-registry
+	
+.PHONY: config
+config:
