@@ -2,16 +2,6 @@
 
 open System.Text.Json
 
-[<CLIMutable>]
-type DockerRegistryConfiguration = {
-    RegistryAddress: string
-}
-
-[<CLIMutable>]
-type MessageQueueConfiguration = {
-    RedisAddress: string
-    RetryCount: int
-}
 
 [<CLIMutable>]
 type BlobStoreConfiguration = {
@@ -19,11 +9,32 @@ type BlobStoreConfiguration = {
 }
 
 [<CLIMutable>]
+type DockerRegistryConfiguration = {
+    RegistryAddress: string
+}
+
+
+[<CLIMutable>]
+type LoggingConfiguration = {
+    LogPath: string
+}
+
+
+[<CLIMutable>]
+type MessageQueueConfiguration = {
+    RedisAddress: string
+    RetryCount: int
+}
+
+
+[<CLIMutable>]
 type Configuration =
     {
-        DockerRegistry: DockerRegistryConfiguration
-        MessageQueue: MessageQueueConfiguration
         BlobStore: BlobStoreConfiguration
+        DockerRegistry: DockerRegistryConfiguration
+        Logging: LoggingConfiguration
+        MessageQueue: MessageQueueConfiguration
+        
     }
 
 module Parsing =

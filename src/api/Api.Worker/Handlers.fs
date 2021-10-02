@@ -13,28 +13,38 @@ let asMessageHandler<'T when 'T : not struct> (fn:'T -> Object) : Func<IMessage<
     Func<IMessage<'T>, Object>(fun (incoming : IMessage<'T>) -> fn (incoming.GetBody()))
         
 
-let private deployApplication (message : Api.Domain.Messages.DeployAppMessage) : Object =
-    Console.WriteLine("Deploying app {0}", message.AppId)
+let private deployApplication (logger : Api.Config.Logging.Logger) (message : Api.Domain.Messages.DeployAppMessage) : Object =
     
     let appImage =
         BuildpackExecutor.defaults
-        |> buildpack "gcr.io/paketo-buildpacks/go"
+        |> buildpack "gcr.io/paketo-buildpacks/go" 
         |> registryAddress "localhost:6000"
         |> sourcePath message.SourcePath
+        |> (fun settings ->
+            logger.Info(
+                "create-container-image",
+                {|
+                    Id = message.AppId;
+                    Version = message.Version;
+                    BuildpackSettings = settings;
+                    SourcePath = sourcePath;
+                |}
+                )
+            settings
+        )
         |> run message.AppId (message.Version.ToString())
     
     match appImage with
     | Error(err) ->
-        Console.Error.WriteLine("Error creating application image")
-        Console.Error.WriteLine(err)    
+        logger.Error("create-container-image", err)
     | Ok(imageName) ->
+        logger.Info("publish-container-image", {| Image = imageName |})
         match ContainerImages.push(imageName) with
-        | Ok(imageReference) -> Console.WriteLine($"Created image '{imageReference}' for app guid {message.AppId}")
+        | Ok(imageReference) -> logger.Info("published-container-image", {| Image = imageReference |})
         | Error(err) ->
-            Console.Error.WriteLine("Error pushing application image")
-            Console.Error.WriteLine(err)    
+            logger.Error("publish-container-image", err)
         
     null
 
-let deployApplicationHandler = asMessageHandler deployApplication
+let deployApplicationHandler logger = asMessageHandler (deployApplication logger)
     

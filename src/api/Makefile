@@ -31,3 +31,4 @@ stop_docker_registry:
 	
 .PHONY: config
 config:
+	./scripts/generate-config.sh

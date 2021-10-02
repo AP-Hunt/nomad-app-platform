@@ -7,6 +7,7 @@ open ServiceStack.Messaging
 type Services = {
     AppStore: IApplicationStore
     Configuration: Configuration
+    Logger : Api.Config.Logging.Logger
     MessageQueue: IMessageService
 }
 

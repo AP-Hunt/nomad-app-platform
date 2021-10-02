@@ -16,6 +16,7 @@ module AppRoutes
     open Pagination
     
     let apps_index_post
+        (logger : Api.Config.Logging.Logger)
         (appStore : IApplicationStore)
         (messageService : IMessageService)
         (blobStore : string)
@@ -24,12 +25,15 @@ module AppRoutes
             f.TryGetFormFile "source_bundle"
         
         let extractAndConvertManifest archive =
+            logger.Info("extract-manifest")
             let manifestYaml = (archive |> SourceArchive.extractManifest).Value
             let appManifest = manifestYaml |> ApplicationManifest.fromYaml
             
             match appManifest with
             | Some(manifest) -> Ok(manifest)
-            | None -> Error("manifest parsing error")
+            | None ->
+                logger.Error("invalid-manifest")
+                Error("manifest parsing error")
     
         let createApplication manifest =
             match appStore.FindApplicationByName(manifest.Name) with
@@ -37,10 +41,17 @@ module AppRoutes
             | None -> Ok {Application.Name = manifest.Name; Id = None; Version = 1}
         
         let saveApplication (app : Application) : Result<Application, string> =
-            Ok(appStore.Save(app))
+            let savedApp = appStore.Save(app)
+            logger.Info(
+                "saved-application",
+                {| Id = savedApp.Id; Version = savedApp.Version|}
+            )
+            Ok(savedApp)
             
         let saveSourceBundle (bundle : IFormFile) blobStorePath (app : Application) =
             let bundlePath = $"%s{blobStorePath}/%s{app.Id.Value}.zip"
+            
+            logger.Info("save-source-bundle", {| BundlePath = bundlePath |})
             use bundleDestinationStream = File.OpenWrite(bundlePath)
             bundle.CopyTo(bundleDestinationStream)
             Ok((app, bundlePath))
@@ -49,9 +60,12 @@ module AppRoutes
             let message = MessagePublishing.deployApp app blobStorePath
             try
                 messageService.MessageFactory.CreateMessageProducer().Publish message
+                logger.Info("emit-deploy-message", {| Id = app.Id; Version = app.Version|})
                 Ok(app)
             with
-            | ex -> Error("failed to publish message: " + ex.Message)
+            | ex ->
+                logger.Error("emit-deploy-message", ex)
+                Error("failed to publish message: " + ex.Message)
             
         let errorResponse errMsg = 
             Response.withStatusCode StatusCodes.Status400BadRequest
@@ -59,8 +73,11 @@ module AppRoutes
             
         let acceptAppUpload (sourceBundle : IFormFile option) : HttpHandler =
             match sourceBundle with
-            | None -> errorResponse "No archive uploaded"
+            | None ->
+                logger.Error("no-archive-uploaded")
+                errorResponse "No archive uploaded"
             | Some (bundle) ->
+                logger.Info("accept-upload")
                 match SourceArchive.validateArchive (bundle.OpenReadStream()) with
                 | Error e -> errorResponse (e.ToString())
                 | Ok archive ->
@@ -73,7 +90,9 @@ module AppRoutes
                         |> Result.bind (publishDeployAppMessage messageService) 
                         
                     match application with
-                    | Error err -> errorResponse err
+                    | Error err ->
+                        logger.Error("accept-upload", err)
+                        errorResponse err
                     | Ok app -> 
                         Response.withStatusCode StatusCodes.Status202Accepted
                         >> Response.ofJson app
@@ -82,10 +101,11 @@ module AppRoutes
     
     let apps_index_get (appStore : IApplicationStore) ctx =
         Response.ofJson (appStore.All() |> paginatedCollectionOf) ctx
-    
+
     let all services = [
         get "/apps" (apps_index_get services.AppStore)
         post "/apps" (apps_index_post
+                          services.Logger
                           services.AppStore
                           services.MessageQueue
                           services.Configuration.BlobStore.SourceBundleStoragePath)
