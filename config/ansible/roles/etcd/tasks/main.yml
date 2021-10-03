@@ -1,0 +1,79 @@
+---
+- name: "Create etcd user and group"
+  become: true
+  block:
+    - ansible.builtin.group:
+        name: "etcd"
+        system: true
+
+    - ansible.builtin.user:
+        name: "etcd"
+        groups:
+          - etcd
+        create_home: false
+        system: true
+
+- name: "Install Etcd binaries"
+  become: true
+  block:
+    - name: "Create directories"
+      ansible.builtin.file:
+        path: "{{item}}"
+        state: directory
+        owner: etcd
+        group: etcd
+      loop:
+        - "/opt/etcd"
+        - "/opt/etcd/bin"
+        - "/opt/etcd/data"
+
+    - name: "Copy binaries"
+      ansible.builtin.copy:
+        remote_src: true
+        src: "/vagrant/bin/{{item}}"
+        dest: "/opt/etcd/bin/{{item}}"
+        owner: etcd
+        group: etcd
+        mode: "771"
+      loop:
+        - "etcd"
+        - "etcdctl"
+        - "etcdutl"
+
+- name: "Configure Etcd"
+  become: true
+  become_user: root
+  block:
+    - name: "Create config.yml"
+      ansible.builtin.template:
+        src: etcd.yml.j2
+        dest: /opt/etcd/etcd.yml
+        owner: etcd
+        group: etcd
+        mode: "644"
+
+- name: "Configure Systemd"
+  become: true
+  become_user: root
+  block:
+    - name: "Create etcd.service"
+      become_user: root
+      ansible.builtin.template:
+        src: etcd.systemd.j2
+        dest: /etc/systemd/system/etcd.service
+        owner: root
+        group: root
+        mode: "644"
+
+    - name: "Enable etcd daemon"
+      ansible.builtin.systemd:
+        daemon_reload: true
+        enabled: true
+        name: etcd
+
+    - name: "Restart etcd daemon"
+      ansible.builtin.systemd:
+        daemon_reload: true
+        enabled: true
+        name: etcd
+        state: restarted        

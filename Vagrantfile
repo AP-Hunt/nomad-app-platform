@@ -8,7 +8,8 @@ instances = [
     :ip => "192.168.33.10",
     :roles => [
       :consul_server,
-      :nomad_server
+      :nomad_server,
+      :etcd_member
     ]
   },
   {
@@ -16,7 +17,8 @@ instances = [
     :ip => "192.168.33.11",
     :roles => [
       :consul_server,
-      :nomad_client
+      :nomad_client,
+      :etcd_member
     ]
   },
   {
@@ -24,7 +26,8 @@ instances = [
     :ip => "192.168.33.12",
     :roles => [
       :consul_server,
-      :nomad_client
+      :nomad_client,
+      :etcd_member
     ]
   },
 ]
@@ -72,6 +75,7 @@ def build_ansible_groups(instances)
     "consul_servers" => filter_by_role(instances, :consul_server),
     "nomad_servers" => filter_by_role(instances, :nomad_server),
     "nomad_clients" => filter_by_role(instances, :nomad_client),
+    "etcd_members" => filter_by_role(instances, :etcd_member)
   }
 end
 

@@ -5,8 +5,10 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
+User=etcd
+Group=etcd
 ExecReload=/bin/kill -HUP $MAINPID
-ExecStart=/vagrant/bin/etcd --log-level debug
+ExecStart=/opt/etcd/bin/etcd --config-file /opt/etcd/etcd.yml
 KillMode=process
 KillSignal=SIGINT
 LimitNOFILE=65536
