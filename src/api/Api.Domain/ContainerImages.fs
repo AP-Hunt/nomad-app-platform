@@ -21,5 +21,5 @@ module ContainerImages =
         dockerProcess.WaitForExit()
         
         match dockerProcess.ExitCode with
-        | 0 -> Ok(dockerProcess.StandardOutput.ReadToEnd())
-        | _ -> Error(dockerProcess.StandardError.ReadToEnd())
+        | 0 -> Ok(dockerProcess.StandardOutput.ReadToEnd().Trim())
+        | _ -> Error(dockerProcess.StandardError.ReadToEnd().Trim())

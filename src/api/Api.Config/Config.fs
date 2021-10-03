@@ -6,6 +6,7 @@ open System.Text.Json
 [<CLIMutable>]
 type BlobStoreConfiguration = {
     SourceBundleStoragePath: string
+    TerraformStatePath: string
 }
 
 [<CLIMutable>]
@@ -19,6 +20,14 @@ type LoggingConfiguration = {
     LogPath: string
 }
 
+[<CLIMutable>]
+type NomadConfiguration = {
+    ApiAddress: string
+    
+    // Docker registry details to be used
+    // when deploying applications to Nomad
+    DockerRegistry: DockerRegistryConfiguration
+}
 
 [<CLIMutable>]
 type MessageQueueConfiguration = {
@@ -34,7 +43,7 @@ type Configuration =
         DockerRegistry: DockerRegistryConfiguration
         Logging: LoggingConfiguration
         MessageQueue: MessageQueueConfiguration
-        
+        Nomad: NomadConfiguration
     }
 
 module Parsing =

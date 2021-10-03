@@ -61,6 +61,6 @@ module BuildpackExecutor =
         
         match packProcess.ExitCode with
         | 0 -> Ok(imageName)
-        | _ -> Error(packProcess.StandardError.ReadToEnd())
+        | _ -> Error(packProcess.StandardError.ReadToEnd().Trim())
         
         

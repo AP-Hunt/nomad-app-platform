@@ -5,11 +5,12 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarnOn>3390;$(WarnOn)</WarnOn>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <Compile Include="Applications.fs" />
     <Compile Include="ApplicationStores.fs" />
     <Compile Include="ApplicationManifest.fs" />
+    <Compile Include="Deployment.fs" />
     <Compile Include="SourceArchive.fs" />
     <Compile Include="Messages.fs" />
     <Compile Include="Buildpacks.fs" />
@@ -22,4 +23,9 @@
     <PackageReference Include="YamlDotNet" Version="11.2.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="terraform\**\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

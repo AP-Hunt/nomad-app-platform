@@ -2,6 +2,7 @@ module Worker
 
 open System
 
+open Api.Worker
 open ServiceStack.Messaging.Redis
 open ServiceStack.Redis
 
@@ -15,7 +16,9 @@ let main argv =
     let messageQueueServer = new RedisMqServer(redisFactory)
     messageQueueServer.RetryCount <- config.MessageQueue.RetryCount
     
-    messageQueueServer.RegisterHandler<Api.Domain.Messages.DeployAppMessage>(Handlers.deployApplicationHandler logger)
+    messageQueueServer.RegisterHandler<Api.Domain.Messages.DeployAppMessage>(
+        DeployApplication.deployApplicationHandler logger config
+    )
     
     messageQueueServer.Start()
     
