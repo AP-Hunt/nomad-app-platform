@@ -1,0 +1,14 @@
+---
+name: "etcd_node_{{public_ip | regex_replace("\.", "_")}}"
+data-dir: "/opt/etcd/data"
+
+
+
+initial-cluster-state: new
+initial-cluster: "{% for ip in server_ips %}etcd_node_{{ip | regex_replace("\.", "_")}}=http://{{ip}}:2380{%if not loop.last%},{%endif%}{% endfor %}"
+initial-cluster-token: etcd-cluster-1
+initial-advertise-peer-urls: "http://{{public_ip}}:2380"
+
+advertise-client-urls: "http://{{public_ip}}:2380"
+listen-peer-urls: "http://{{listen_ip}}:2380"
+listen-client-urls: "http://{{listen_ip}}:2379"

@@ -33,6 +33,19 @@
         dest: /vagrant/bin/
       when: consul_exe.stat.exists == false
 
+    - ansible.builtin.stat:
+        path: /vagrant/bin/etcd
+      register: etcd_exe
+
+    - name: "Download Etcd"
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: https://github.com/etcd-io/etcd/releases/download/v3.5.0/etcd-v3.5.0-linux-amd64.tar.gz
+        dest: /vagrant/bin/
+        extra_opts:
+          - "--strip-components=1"
+      when: etcd_exe.stat.exists == false      
+
 - hosts: all
   roles:
     - docker
@@ -63,4 +76,11 @@
         listen_ip: "{{ hostvars[inventory_hostname].private_ip }}"
         type: client
         num_servers: "{{ groups['nomad_servers'] | length }}"
+        server_ips: "{{ hostvars | json_query('*.private_ip') }}"
+
+- hosts: etcd_members
+  roles:
+    - role: etcd
+      vars:
+        public_ip: "{{ hostvars[inventory_hostname].private_ip }}"  
         server_ips: "{{ hostvars | json_query('*.private_ip') }}"

@@ -1,1 +1,1 @@
-export PATH="$PATH:/opt/consul/bin:/opt/nomad/bin"
+export PATH="$PATH:/opt/consul/bin:/opt/nomad/bin:/opt/etcd/bin"
