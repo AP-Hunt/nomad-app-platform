@@ -45,6 +45,7 @@
     remote_src: true
     src: https://golang.org/dl/go1.17.1.linux-amd64.tar.gz
     dest: /usr/local/bin
+    validate_certs: false
   when: go_exe.stat.exists == false
 
 - name: "Install development packages"
