@@ -6,28 +6,34 @@ instances = [
   {
     :hostname => "node-1",
     :ip => "192.168.33.10",
+    :cidrAllocation => "10.0.1.0/24",
     :roles => [
       :consul_server,
       :nomad_server,
-      :etcd_member
+      :etcd_member,
+      :calico_node
     ]
   },
   {
     :hostname => "node-2",
     :ip => "192.168.33.11",
+    :cidrAllocation => "10.0.2.0/24",
     :roles => [
       :consul_server,
       :nomad_client,
-      :etcd_member
+      :etcd_member,
+      :calico_node
     ]
   },
   {
     :hostname => "node-3",
     :ip => "192.168.33.12",
+    :cidrAllocation => "10.0.3.0/24",
     :roles => [
       :consul_server,
       :nomad_client,
-      :etcd_member
+      :etcd_member,
+      :calico_node
     ]
   },
 ]
@@ -59,7 +65,8 @@ Vagrant.configure("2") do |config|
 
           instances.each do |i|
             host_vars[i[:hostname]] = {
-              "private_ip" => i[:ip]
+              "private_ip" => i[:ip],
+              "cidr_allocation" => i[:cidrAllocation]
             }
           end
 
@@ -75,7 +82,8 @@ def build_ansible_groups(instances)
     "consul_servers" => filter_by_role(instances, :consul_server),
     "nomad_servers" => filter_by_role(instances, :nomad_server),
     "nomad_clients" => filter_by_role(instances, :nomad_client),
-    "etcd_members" => filter_by_role(instances, :etcd_member)
+    "etcd_members" => filter_by_role(instances, :etcd_member),
+    "calico_nodes" => filter_by_role(instances, :calico_node)
   }
 end
 

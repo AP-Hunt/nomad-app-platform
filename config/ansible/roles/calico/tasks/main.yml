@@ -1,0 +1,82 @@
+---
+- name: "Create Calico user, group, and directories"
+  become: true
+  block:
+    - ansible.builtin.group:
+        name: "calico"
+        system: true
+
+    - ansible.builtin.user:
+        name: "calico"
+        groups:
+          - calico
+          - docker
+        create_home: false
+        system: true
+
+    - name: "Create directories"
+      ansible.builtin.file:
+        path: "{{item}}"
+        state: directory
+        owner: calico
+        group: calico
+      loop:
+        - "/opt/calico"
+        - "/opt/calico/bin"
+
+- name: "Install Calicoctl"
+  become: true
+  become_user: root
+  ansible.builtin.get_url:
+    url: https://github.com/projectcalico/calicoctl/releases/download/v3.20.2/calicoctl
+    dest: /opt/calico/bin/calicoctl
+    owner: calico
+    group: calico
+    mode: "771"
+
+- name: "Configure Calico node in etcd"
+  ansible.builtin.shell: |
+    export DATASTORE_TYPE=etcdv3 
+    export ETCD_ENDPOINTS=http://127.0.0.1:2379 
+    export CALICO_NODE_NAME="calico-node-{{node_ip | regex_replace("\.", "-")}}"
+    
+    /opt/calico/bin/calicoctl apply -f - <<EOF
+      - apiVersion: projectcalico.org/v3
+        kind: Node
+        metadata:
+          name: "${CALICO_NODE_NAME}"
+    EOF
+
+- name: "Configure Systemd"
+  become: true
+  become_user: root
+  block:
+    - name: Create environment file
+      ansible.builtin.template:
+        src: calico.env.j2
+        dest: /opt/calico/calico.env
+        owner: calico
+        group: calico
+        mode: "644"
+
+    - name: "Create Calico.service"
+      become_user: root
+      ansible.builtin.template:
+        src: calico.systemd.j2
+        dest: /etc/systemd/system/calico.service
+        owner: root
+        group: root
+        mode: "644"
+
+    - name: "Enable Calico daemon"
+      ansible.builtin.systemd:
+        daemon_reload: true
+        enabled: true
+        name: calico
+
+    - name: "Restart Calico daemon"
+      ansible.builtin.systemd:
+        daemon_reload: true
+        enabled: true
+        name: calico
+        state: restarted
