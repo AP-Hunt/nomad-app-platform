@@ -96,7 +96,7 @@ type AppResponse struct {
 	Version int
 }
 
-var _ = Describe("Api", func() {
+var _ = PDescribe("Api", func() {
 	It("Accepts a zip file containing the source, and creates a container image from it", func() {
 		sourceArchive, err := createZipArchive("testdata/simple_go_app", "go-app.zip")
 		Expect(err).ToNot(HaveOccurred())
