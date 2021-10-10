@@ -51,6 +51,22 @@
     - docker
     - vagrant-user
 
+- hosts: etcd_members
+  roles:
+    - role: etcd
+      vars:
+        public_ip: "{{ hostvars[inventory_hostname].private_ip }}"  
+        server_ips: "{{ hostvars | json_query('*.private_ip') }}"
+
+
+- hosts: calico_nodes
+  roles:
+    - role: calico
+      vars:
+        node_ip: "{{ hostvars[inventory_hostname].private_ip }}"  
+        allocation_cidr: "{{ hostvars[inventory_hostname].cidr_allocation }}"
+        etcd_nodes: "{{ hostvars | json_query('*.private_ip') }}"   
+
 - hosts: consul_servers
   roles:
     - role: consul
@@ -76,20 +92,4 @@
         listen_ip: "{{ hostvars[inventory_hostname].private_ip }}"
         type: client
         num_servers: "{{ groups['nomad_servers'] | length }}"
-        server_ips: "{{ hostvars | json_query('*.private_ip') }}"
-
-- hosts: etcd_members
-  roles:
-    - role: etcd
-      vars:
-        public_ip: "{{ hostvars[inventory_hostname].private_ip }}"  
-        server_ips: "{{ hostvars | json_query('*.private_ip') }}"
-
-
-- hosts: calico_nodes
-  roles:
-    - role: calico
-      vars:
-        node_ip: "{{ hostvars[inventory_hostname].private_ip }}"  
-        allocation_cidr: "{{ hostvars[inventory_hostname].cidr_allocation }}"
-        etcd_nodes: "{{ hostvars | json_query('*.private_ip') }}"   
+        server_ips: "{{ hostvars | json_query('*.private_ip') }}"        
