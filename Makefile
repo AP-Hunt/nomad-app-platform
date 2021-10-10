@@ -34,7 +34,7 @@ start:
 	vagrant up --provision && make acceptance_test
 
 acceptance_test:
-	for node in "node-1" "node-2" "node-3"; do \
+	@ for node in "node-1" "node-2" "node-3"; do \
 		vagrant ssh "$${node}" -c "cd /vagrant && make node_test"; \
 	done;
 
@@ -42,7 +42,7 @@ node_test:
 	@go install github.com/onsi/ginkgo/ginkgo@latest && \
 	cd tests/acceptance && \
 	echo "Running tests on $$(hostname)" && \
-	CGO_ENABLED=0 ginkgo .
+	CGO_ENABLED=0 ginkgo -p -v .
 
 deploy: nomad registry ingress
 

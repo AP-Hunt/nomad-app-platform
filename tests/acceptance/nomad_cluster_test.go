@@ -2,16 +2,17 @@ package acceptance_test
 
 import (
 	"fmt"
+
+	"github.com/hashicorp/nomad/api"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/hashicorp/nomad/api"
 )
 
-var _ = Describe("NomadCluster", func() {
-	Describe("Members", func(){
+var _ = Describe("["+HostName()+"] Nomad Cluster", func() {
+	Describe("Members", func() {
 		It("There should be 2 nodes", func() {
 			apiConfig := api.Config{
-				Address:    fmt.Sprintf("http://%s:4646", IpAddress),
+				Address: fmt.Sprintf("http://%s:4646", IpAddress),
 			}
 			apiClient, err := api.NewClient(&apiConfig)
 			Expect(err).ToNot(HaveOccurred())
@@ -24,7 +25,7 @@ var _ = Describe("NomadCluster", func() {
 
 		It("There should be 1 server", func() {
 			apiConfig := api.Config{
-				Address:    fmt.Sprintf("http://%s:4646", IpAddress),
+				Address: fmt.Sprintf("http://%s:4646", IpAddress),
 			}
 			apiClient, err := api.NewClient(&apiConfig)
 			Expect(err).ToNot(HaveOccurred())

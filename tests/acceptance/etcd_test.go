@@ -9,7 +9,7 @@ import (
 	etcdclient "go.etcd.io/etcd/client/v3"
 )
 
-var _ = Describe("Etcd", func() {
+var _ = Describe("["+HostName()+"] Etcd", func() {
 	Describe("Members", func() {
 		It("There should be 3 members", func() {
 			// consulConfig := api.DefaultConfig()
