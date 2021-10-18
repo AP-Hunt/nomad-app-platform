@@ -43,13 +43,15 @@ platform_up:
 acceptance_test:
 	@ for node in "node-1" "node-2" "node-3"; do \
 		vagrant ssh "$${node}" -c "cd /vagrant && make node_test"; \
-	done;
+	done; \
+	cd tests/acceptance && \
+	ginkgo -p -v platform_test/
 
 node_test:
 	@go install github.com/onsi/ginkgo/ginkgo@latest && \
 	cd tests/acceptance && \
 	echo "Running tests on $$(hostname)" && \
-	CGO_ENABLED=0 ginkgo -p -v .
+	CGO_ENABLED=0 ginkgo -p -v internal_test/
 
 deploy: nomad registry ingress
 

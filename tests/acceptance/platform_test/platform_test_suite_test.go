@@ -1,4 +1,4 @@
-package acceptance_test
+package platform_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestAcceptance(t *testing.T) {
+func TestExternalTest(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Acceptance Suite")
+	RunSpecs(t, "Platform Test Suite")
 }
