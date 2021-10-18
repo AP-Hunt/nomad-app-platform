@@ -50,8 +50,7 @@
 
     - name: "Copy consul.d/"
       ansible.builtin.copy:
-        remote_src: true
-        src: /vagrant/config/consul/consul.d
+        src: consul.d
         dest: /opt/consul/
         owner: consul
         group: consul

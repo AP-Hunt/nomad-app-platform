@@ -50,8 +50,7 @@
 
     - name: "Copy nomad.d/"
       ansible.builtin.copy:
-        remote_src: true
-        src: /vagrant/config/nomad/nomad.d
+        src: nomad.d
         dest: /opt/nomad/
         owner: nomad
         group: nomad
