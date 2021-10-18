@@ -1,0 +1,29 @@
+{
+    "cniVersion": "0.3.1",
+    "name": "calico",
+    "plugins": [
+        {
+            "type": "calico",
+            
+            "nodename": "calico-node-{{listen_ip | regex_replace("\.", "-")}}",
+
+            "log_level": "INFO",
+            "log_file_path": "/var/log/calico/cni/cni.log",
+
+            "datastore_type": "etcdv3",
+            "etcd_endpoints": "http://127.0.0.1:2379",
+
+            "ipam": {
+                "type": "calico-ipam",
+                "assign_ipv4": "true",
+                "ipv4_pools": ["{{allocation_cidr}}"]
+            }
+        },    
+        {      
+            "type": "portmap",      
+            "capabilities": { 
+                "portMappings": true 
+            }    
+        }
+    ]
+}

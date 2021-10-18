@@ -1,29 +1,31 @@
-job "echo" {
+job "netcat" {
     datacenters = ["dc1"]
     type = "service"
 
     group "processes" {
         network {
             mode = "cni/calico"
-            port "http" { to = 80 }
+            port "http" { }
         }
 
         task "web" {
             driver = "docker"
             config {
-                image = "hashicorp/http-echo"
+                image = "alpine"
                 args = [
-                    "-listen", "0.0.0.0:${NOMAD_PORT_http}",
-                    "-text", "hello world from index ${NOMAD_ALLOC_INDEX}"
+                    "-p", "${NOMAD_PORT_http}",
+                    "-lk",
+                    "-e", "'echo hello world'",
                 ]
                 ports = ["http"]
+                command = "nc"
 
                 advertise_ipv6_address = false
             }
         }
 
         service {
-            name         = "echo"
+            name         = "netcat"
             port         = "http"
             address_mode = "alloc"
 

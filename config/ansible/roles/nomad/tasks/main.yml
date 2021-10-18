@@ -66,6 +66,56 @@
         group: nomad
         mode: "u=rwX,g=rX,o=rX"
 
+- name: "CNI plugins"
+  become: true
+  become_user: root
+  block:
+    - name: "Create directories"
+      ansible.builtin.file:
+        path: "{{item}}"
+        state: directory
+        owner: nomad
+        group: nomad
+      loop:
+        - "/opt/cni"
+        - "/opt/cni/bin"
+        - "/opt/cni/config"
+
+    - name: "Install CNI plugins"
+      ansible.builtin.unarchive:
+        creates: /opt/cni/bin/bandwidth # First one alphabetically
+        remote_src: true
+        src: https://github.com/containernetworking/plugins/releases/download/v1.0.1/cni-plugins-linux-amd64-v1.0.1.tgz
+        dest: /opt/cni/bin/
+        owner: nomad
+        group: nomad
+
+    - name: "Install Calico CNI"
+      ansible.builtin.get_url:
+        force: false
+        url: https://github.com/projectcalico/cni-plugin/releases/download/v3.20.2/calico-amd64
+        dest: /opt/cni/bin/calico
+        owner: nomad
+        group: nomad
+        mode: "771"
+
+    - name: "Install Calico CNI"
+      ansible.builtin.get_url:
+        force: false
+        url: https://github.com/projectcalico/cni-plugin/releases/download/v3.20.2/calico-ipam-amd64
+        dest: /opt/cni/bin/calico-ipam
+        owner: nomad
+        group: nomad
+        mode: "771"        
+
+    - name: "Create CNI config"
+      ansible.builtin.template:
+        src: calico-cni.conflist.j2
+        dest: /opt/cni/config/calico-cni.conflist
+        owner: nomad
+        group: nomad
+        mode: "644"      
+
 - name: "Configure Systemd"
   become: true
   become_user: root

@@ -1,0 +1,33 @@
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-all
+spec:
+  selector: all()
+  types:
+    - Ingress
+    - Egress
+
+  ingress:
+  - action: Allow
+    protocol: TCP
+    source:
+      nets:
+        - 0.0.0.0/0
+  - action: Allow
+    protocol: UDP
+    source:
+      nets:
+        - 0.0.0.0/0        
+
+  egress:
+  - action: Allow
+    protocol: TCP
+    destination:
+      nets:
+        - 0.0.0.0/0  
+  - action: Allow
+    protocol: UDP
+    destination:
+      nets:
+        - 0.0.0.0/0                

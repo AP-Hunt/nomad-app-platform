@@ -18,7 +18,7 @@
     - name: "Download Nomad"
       ansible.builtin.unarchive:
         remote_src: true
-        src: https://releases.hashicorp.com/nomad/1.1.2/nomad_1.1.2_linux_amd64.zip
+        src: https://releases.hashicorp.com/nomad/1.2.0-beta1/nomad_1.2.0-beta1_linux_amd64.zip
         dest: /vagrant/bin/
       when: nomad_exe.stat.exists == false
 
@@ -48,14 +48,19 @@
 
 - hosts: all
   roles:
-    - docker
-    - vagrant-user
+    - role: docker
+      vars:
+        allocation_cidr: "{{ hostvars[inventory_hostname].cidr_allocation }}"
+        gateway_ip: "{{ hostvars[inventory_hostname].private_ip }}"
+
+    - role: vagrant-user
+      vars: []
 
 - hosts: etcd_members
   roles:
     - role: etcd
       vars:
-        public_ip: "{{ hostvars[inventory_hostname].private_ip }}"  
+        public_ip: "{{ hostvars[inventory_hostname].private_ip }}"
         server_ips: "{{ hostvars | json_query('*.private_ip') }}"
 
 
@@ -84,6 +89,7 @@
         type: server
         num_servers: "{{ groups['nomad_servers'] | length }}"
         server_ips: "{{ hostvars | json_query('*.private_ip') }}"
+        allocation_cidr: "{{ hostvars[inventory_hostname].cidr_allocation }}"
 
 - hosts: nomad_clients
   roles:
@@ -92,4 +98,5 @@
         listen_ip: "{{ hostvars[inventory_hostname].private_ip }}"
         type: client
         num_servers: "{{ groups['nomad_servers'] | length }}"
-        server_ips: "{{ hostvars | json_query('*.private_ip') }}"        
+        server_ips: "{{ hostvars | json_query('*.private_ip') }}"
+        allocation_cidr: "{{ hostvars[inventory_hostname].cidr_allocation }}"

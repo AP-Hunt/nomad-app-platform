@@ -1,4 +1,5 @@
 ---
+# Provided vars
 node_ip: 0.0.0.0
-allocation_cidr: 10.0.0.2/32
+allocation_cidr: "10.0.0.2/32"
 etcd_nodes: []

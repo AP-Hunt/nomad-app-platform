@@ -9,23 +9,27 @@ ExecStartPre=-/usr/bin/docker rm -f calico-node
 ExecStart=/usr/bin/docker run --net=host --privileged \
  --name=calico-node \
  -e NODENAME=${CALICO_NODENAME} \
+ -e HOSTNAME=${CALICO_NODENAME} \
+ -e FELIX_FELIXHOSTNAME=${CALICO_NODENAME} \
  -e IP=${CALICO_IP} \
+ -e IP_AUTODETECTION_METHOD=${CALICO_IP_AUTODETECTION_METHOD} \
  -e CALICO_IPV4POOL_CIDR=${CALICO_IPV4POOL_CIDR} \
+ -e CALICO_IPV4POOL_IPIP=${CALICO_IPV4POOL_IPIP} \
  -e CALICO_NETWORKING_BACKEND=${CALICO_NETWORKING_BACKEND} \
- -e NO_DEFAULT_POOLS=${NO_DEFAULT_POOLS} \
  -e DATASTORE_TYPE=${DATASTORE_TYPE} \
  -e ETCD_ENDPOINTS=${ETCD_ENDPOINTS} \
- -e FELIX_LOGSEVERITYSCREEN=info \
+ -e FELIX_LOGSEVERITYSCREEN=${LOG_LEVEL} \
  -e CLUSTER_TYPE=vxlan \
- -e CALICO_STARTUP_LOGLEVEL=INFO \
+ -e CALICO_STARTUP_LOGLEVEL=${LOG_LEVEL} \
  -e FELIX_HEALTHENABLED=true \
  -v /var/log/calico:/var/log/calico \
  -v /var/lib/calico:/var/lib/calico \
  -v /var/run/calico:/var/run/calico \
+ -v /run:/run \
  -v /run/docker/plugins:/run/docker/plugins \
  -v /lib/modules:/lib/modules \
  -v /etc/pki:/pki \
- calico/node:v3.20.2 /bin/calico-node -felix
+ calico/node:v3.20.2
 
 ExecStop=-/usr/bin/docker stop calico-node
 

@@ -34,11 +34,11 @@
       - docker-ce-cli
       - containerd.io
 
-- name: "Configure Docker for IPv6"
+- name: "Configure Docker"
   become: true
   become_user: root
-  ansible.builtin.copy:
-    src: daemon.json
+  ansible.builtin.template:
+    src: daemon.json.j2
     dest: /etc/docker/daemon.json
 
 - name: "Enable Docker in Systemd"

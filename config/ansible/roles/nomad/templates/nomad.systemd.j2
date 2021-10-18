@@ -12,7 +12,7 @@ After=consul.service
 
 [Service]
 ExecReload=/bin/kill -HUP $MAINPID
-ExecStart=/vagrant/bin/nomad agent -log-level DEBUG -config /opt/nomad/listen.hcl -config /opt/nomad/nomad.d -{{type}}
+ExecStart=/vagrant/bin/nomad agent -config /opt/nomad/listen.hcl -config /opt/nomad/nomad.d -{{type}}
 KillMode=process
 KillSignal=SIGINT
 LimitNOFILE=65536

@@ -4,6 +4,7 @@ job "container-registry" {
 
     group "container-registry" {
         network {
+            mode = "cni/calico"
             port "registry" { to = 5000 }
         }
 

@@ -23,6 +23,7 @@
       loop:
         - "/opt/calico"
         - "/opt/calico/bin"
+        - "/opt/calico/policy"
 
 - name: "Install Calicoctl"
   become: true
@@ -46,6 +47,65 @@
         metadata:
           name: "${CALICO_NODE_NAME}"
     EOF
+
+
+- name: "Configure Calico policies"
+  become: true
+  become_user: root
+  block:
+    - name: "Copy policies"
+      ansible.builtin.copy:
+        src: policies/
+        dest: /opt/calico/policy
+        owner: calico
+        group: calico
+        mode: "644"
+
+    - name: "Apply policies"
+      ansible.builtin.shell: |
+        export DATASTORE_TYPE=etcdv3 
+        export ETCD_ENDPOINTS=http://127.0.0.1:2379 
+        export CALICO_NODE_NAME="calico-node-{{node_ip | regex_replace("\.", "-")}}"
+        
+        /opt/calico/bin/calicoctl apply -f /opt/calico/policy    
+
+- name: "Create /var/lib/calico"
+  become: true
+  become_user: root
+  ansible.builtin.file:
+    path: /var/lib/calico
+    state: directory
+    owner: calico
+    group: docker
+    mode: "664"
+
+- name: "Write nodename file"
+  become: true
+  become_user: root
+  ansible.builtin.template:
+    src: nodename.j2
+    dest: /var/lib/calico/nodename
+    owner: calico
+    group: calico
+    mode: "644"
+
+- name: "Ensure IP forwarding is enabled"
+  become: true
+  become_user: root
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: "Make calicoctl usable"
+  become: true
+  become_user: root
+  ansible.builtin.template:
+    src: calico.profile.sh.j2
+    dest: /etc/profile.d/calico.profile.sh
+    mode: "644"
 
 - name: "Configure Systemd"
   become: true

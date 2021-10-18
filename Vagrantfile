@@ -6,7 +6,7 @@ instances = [
   {
     :hostname => "node-1",
     :ip => "192.168.33.10",
-    :cidrAllocation => "10.0.1.0/24",
+    :cidrAllocation => "192.168.40.0/24",
     :roles => [
       :consul_server,
       :nomad_server,
@@ -17,7 +17,7 @@ instances = [
   {
     :hostname => "node-2",
     :ip => "192.168.33.11",
-    :cidrAllocation => "10.0.2.0/24",
+    :cidrAllocation => "192.168.40.0/24",
     :roles => [
       :consul_server,
       :nomad_client,
@@ -28,7 +28,7 @@ instances = [
   {
     :hostname => "node-3",
     :ip => "192.168.33.12",
-    :cidrAllocation => "10.0.3.0/24",
+    :cidrAllocation => "192.168.40.0/24",
     :roles => [
       :consul_server,
       :nomad_client,
