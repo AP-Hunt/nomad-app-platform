@@ -33,6 +33,11 @@ job "echo" {
                 interval = "5s"
                 timeout  = "5s"
             }
+
+            tags = [
+                "traefik.http.routers.echo.rule=Host(`echo.paas.dev`)",
+                "traefik.enable=true"
+            ]
         }
 
         scaling {

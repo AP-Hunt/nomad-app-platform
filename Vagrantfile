@@ -39,16 +39,24 @@ instances = [
 ]
 
 Vagrant.configure("2") do |config|
+  config.hostmanager.enabled = false
+  config.hostmanager.manage_host = true
+  config.hostmanager.manage_guest = false
+
   instances.each do |instance|
     config.vm.define instance[:hostname] do |node|
       node.vm.box = "ubuntu/bionic64"
       node.vm.network "private_network", ip: instance[:ip]
       node.vm.synced_folder ".", "/vagrant"
 
+      node.hostmanager.aliases = %w(paas.dev)
+
       node.vm.provider "virtualbox" do |vb|
         vb.gui = false
         vb.memory = "2048"
       end
+
+      node.vm.provision :hostmanager
 
       # Configure ONLY the last client machine to use Ansible as provisioner
       # and tell it to target everything.

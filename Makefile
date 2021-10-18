@@ -30,8 +30,15 @@ $(ETCD_EXE): inside_vagrant_vm
 	  etcd-v3.5.0-linux-amd64/etcd
 	rm bin/etcd.tar.gz
 
-start:
-	vagrant up --provision && make acceptance_test
+start: vagrant_up platform_up acceptance_test
+
+vagrant_up:
+	vagrant up --provision
+
+platform_up:
+	cd config/platform && \
+	terraform init && \
+	terraform apply -auto-approve -var nomad_addr=http://192.168.33.10:4646
 
 acceptance_test:
 	@ for node in "node-1" "node-2" "node-3"; do \

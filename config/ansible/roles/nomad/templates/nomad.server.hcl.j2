@@ -5,6 +5,11 @@ server {
     bootstrap_expect = {{num_servers}}
 }
 
+client {
+    enabled = true
+    servers = {{server_ips | to_json }}
+}
+
 bind_addr="0.0.0.0"
 advertise {
     http = "{{listen_ip}}"
