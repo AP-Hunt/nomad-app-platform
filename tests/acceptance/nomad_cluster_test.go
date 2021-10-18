@@ -10,7 +10,7 @@ import (
 
 var _ = Describe("["+HostName()+"] Nomad Cluster", func() {
 	Describe("Members", func() {
-		It("There should be 2 nodes", func() {
+		It("There should be 3 nodes", func() {
 			apiConfig := api.Config{
 				Address: fmt.Sprintf("http://%s:4646", IpAddress),
 			}
@@ -20,7 +20,7 @@ var _ = Describe("["+HostName()+"] Nomad Cluster", func() {
 			nodes, _, err := apiClient.Nodes().List(nil)
 			Expect(err).ToNot(HaveOccurred())
 
-			Expect(len(nodes)).To(Equal(2))
+			Expect(len(nodes)).To(Equal(3))
 		})
 
 		It("There should be 1 server", func() {
