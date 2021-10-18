@@ -12,7 +12,9 @@
   become_user: root
   ansible.builtin.copy:
     content: |
+      [Resolve]
       DNS=127.0.0.1
+      DNSSEC=false
       Domains=~apps.internal ~paas.dev
     dest: /etc/systemd/resolved.conf.d/consul.conf
 
