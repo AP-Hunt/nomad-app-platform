@@ -7,6 +7,7 @@ open Api.Domain.Applications
 type DeployAppMessage =
     {
         AppId: string
+        AppName: string
         Version: int
         SourcePath: string
     }
@@ -14,5 +15,5 @@ type DeployAppMessage =
 module MessagePublishing =
     
     let deployApp (app : Application) (pathInBlobStore : string) =
-        { AppId = app.Id.Value; Version = app.Version; SourcePath = pathInBlobStore }
+        { AppId = app.Id.Value; AppName = app.Name; Version = app.Version; SourcePath = pathInBlobStore }
         

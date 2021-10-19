@@ -1,6 +1,7 @@
 data "template_file" "nomad_app_job" {
   template = "${file("nomad-app-job.nomad.tpl")}"
   vars = {
+    app_id = var.app_id
     app_name = var.app_name
     container_image = var.container_image
   }

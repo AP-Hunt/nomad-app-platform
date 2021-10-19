@@ -69,7 +69,8 @@ let terraformDeploy
             logger.Info("terraform-working-dir", {|WorkingDir = wd|})
             Ok(wd)
         )
-        |> Result.bind (tfVar "app_name" message.AppId)
+        |> Result.bind (tfVar "app_id" message.AppId)
+        |> Result.bind (tfVar "app_name" message.AppName)
         |> Result.bind (tfVar "nomad_api" config.Nomad.ApiAddress)
         |> Result.bind (tfVar "container_image" containerImage)
        
