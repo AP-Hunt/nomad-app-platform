@@ -18,9 +18,13 @@ let createLogger (config : Api.Config.Configuration) =
 
 let startWebHost (args : string[]) = 
     let config = Api.Config.Parsing.fromFile (args.[0])
-    let logger = new Api.Config.Logging.Logger(config)    
+    let logger = new Api.Config.Logging.Logger(config)
+    
+    let dbContext = new Api.Domain.Persistence.Context(config.Database.ConnectionString)
+    dbContext.ApplyMigrations()
+    
     let services = {
-        AppStore = (InMemoryApplicationStore() :> IApplicationStore)
+        AppStore = (Api.Domain.Persistence.ApplicationStore(dbContext) :> IApplicationStore)
         Configuration = config
         Logger = logger;
         MessageQueue = (MessageQueueService.configure config)

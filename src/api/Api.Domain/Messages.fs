@@ -1,5 +1,6 @@
 namespace Api.Domain.Messages
 
+open System
 open System.IO
 open Api.Domain.Applications
 
@@ -15,5 +16,5 @@ type DeployAppMessage =
 module MessagePublishing =
     
     let deployApp (app : Application) (pathInBlobStore : string) =
-        { AppId = app.Id.Value; AppName = app.Name; Version = app.Version; SourcePath = pathInBlobStore }
+        { AppId = app.Id.ToString(); AppName = app.Name; Version = app.Version; SourcePath = pathInBlobStore }
         

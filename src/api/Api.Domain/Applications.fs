@@ -1,17 +1,16 @@
 namespace Api.Domain.Applications
 
 open System
+open System.ComponentModel.DataAnnotations
 
+[<CLIMutable>]
 type Application =
     {
-        Id: string option
+        Id: Guid
         Name: string
         Version: int
     }
 
-module Applications =
-    let generateId application =
-        { application with Id = Some(Guid.NewGuid().ToString()) }
-        
+module Applications =     
     let incrementVersion application =
         { application with Version = application.Version + 1}

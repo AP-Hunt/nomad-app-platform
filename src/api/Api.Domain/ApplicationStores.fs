@@ -37,9 +37,8 @@ type public InMemoryApplicationStore() =
         | Some a -> update a
         
     member this._save app =
-        let savedApp = app |> Applications.generateId
-        this._applications <- this._applications @ [savedApp]
-        savedApp
+        this._applications <- this._applications @ [app]
+        app
         
     member this._update app =
         let savedApp = app |> Applications.incrementVersion

@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Library.fs" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Api.Domain\Api.Domain.fsproj" />
     </ItemGroup>
 
@@ -23,6 +19,12 @@
       </PackageReference>
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.11" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="Context.fs" />
+        <Compile Include="ApplicationStore.fs" />
+        <Compile Include="Migrations/*.fs" />
     </ItemGroup>
 
 </Project>

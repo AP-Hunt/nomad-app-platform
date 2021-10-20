@@ -1,4 +1,5 @@
 module AppRoutes
+    open System
     open System.IO
     open Microsoft.AspNetCore.Http
     
@@ -38,7 +39,7 @@ module AppRoutes
         let createApplication manifest =
             match appStore.FindApplicationByName(manifest.Name) with
             | Some(app) -> Ok app
-            | None -> Ok {Application.Name = manifest.Name; Id = None; Version = 1}
+            | None -> Ok {Application.Name = manifest.Name; Id = Guid.NewGuid(); Version = 1}
         
         let saveApplication (app : Application) : Result<Application, string> =
             let savedApp = appStore.Save(app)
@@ -49,7 +50,7 @@ module AppRoutes
             Ok(savedApp)
             
         let saveSourceBundle (bundle : IFormFile) blobStorePath (app : Application) =
-            let bundlePath = $"%s{blobStorePath}/%s{app.Id.Value}.zip"
+            let bundlePath = $"%s{blobStorePath}/%s{app.Id.ToString()}.zip"
             
             logger.Info("save-source-bundle", {| BundlePath = bundlePath |})
             use bundleDestinationStream = File.OpenWrite(bundlePath)

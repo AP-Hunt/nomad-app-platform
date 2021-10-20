@@ -10,6 +10,11 @@ type BlobStoreConfiguration = {
 }
 
 [<CLIMutable>]
+type DatabaseConfiguration = {
+    ConnectionString: string
+}
+
+[<CLIMutable>]
 type DockerRegistryConfiguration = {
     RegistryAddress: string
 }
@@ -40,6 +45,7 @@ type MessageQueueConfiguration = {
 type Configuration =
     {
         BlobStore: BlobStoreConfiguration
+        Database: DatabaseConfiguration
         DockerRegistry: DockerRegistryConfiguration
         Logging: LoggingConfiguration
         MessageQueue: MessageQueueConfiguration
