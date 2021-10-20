@@ -1,8 +1,8 @@
 .PHONY: services
-services: redis docker_registry
+services: redis docker_registry postgres config
 
 .PHONY: stop_services
-stop_services: stop_redis stop_docker_registry
+stop_services: stop_redis stop_docker_registry stop_postgres
 
 .PHONY: redis
 redis:
@@ -20,14 +20,28 @@ stop_redis:
 docker_registry:
 	docker run -d \
 		--name nomad-app-platform.api.docker-registry \
+		--rm \
 		-p 6000:5000 \
-		--restart=always \
 		registry:2
 		
 .PHONY: stop_docker_registry
 stop_docker_registry:
 	docker kill nomad-app-platform.api.docker-registry
-	docker rm nomad-app-platform.api.docker-registry
+	
+.PHONY: postgres
+postgres:
+	docker run -d \
+		--rm \
+		--name nomad-app-platform.api.postgres \
+		-e POSTGRES_PASSWORD=nomad-app-platform \
+		-e POSTGRES_DB=api \
+		-e POSTGRES_USER=api \
+		-p 5432:5432 \
+		postgres:13
+		
+.PHONY: stop_postgres
+stop_postgres:
+	docker kill nomad-app-platform.api.postgres
 	
 .PHONY: config
 config:

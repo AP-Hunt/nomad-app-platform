@@ -10,6 +10,9 @@ cat << EOF > storage/config.json
         "SourceBundleStoragePath": "$(pwd)/storage/blob/source-bundles",
         "TerraformStatePath": "$(pwd)/storage/blob/terraform-state"
     },
+    "Database": {
+        "ConnectionString": "Server=127.0.0.1;Port=5432;Database=api;Userid=api;Password=nomad-app-platform;Protocol=3;SSL=false;SslMode=Disable;"
+    },
     "DockerRegistry": {
         "RegistryAddress": "localhost:6000"
     },
