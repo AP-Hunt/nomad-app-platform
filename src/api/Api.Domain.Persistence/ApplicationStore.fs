@@ -28,3 +28,12 @@ type ApplicationStore(context) =
                 app |> addEntity this._ctx
                 saveChanges this._ctx
                 app
+
+        member this.Get(id) (version) =
+            query {
+                for app in this._ctx.Apps do
+                where (app.Id = id && app.Version = version)
+                select app
+            }
+            |> tryFirstAsync
+            |> Async.RunSynchronously

@@ -7,8 +7,7 @@ open Api.Domain.Applications
 [<CLIMutable>]
 type DeployAppMessage =
     {
-        AppId: string
-        AppName: string
+        AppId: Guid
         Version: int
         SourcePath: string
     }
@@ -16,5 +15,5 @@ type DeployAppMessage =
 module MessagePublishing =
     
     let deployApp (app : Application) (pathInBlobStore : string) =
-        { AppId = app.Id.ToString(); AppName = app.Name; Version = app.Version; SourcePath = pathInBlobStore }
+        { AppId = app.Id; Version = app.Version; SourcePath = pathInBlobStore }
         

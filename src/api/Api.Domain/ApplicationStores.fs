@@ -1,11 +1,14 @@
 namespace Api.Domain.Stores
 
+open System
 open Api.Domain.Applications
 
 type public IApplicationStore =
     abstract FindApplicationByName: name: string -> Application option
     abstract Save: app : Application -> Application
     abstract All: unit -> Application list
+    
+    abstract Get: id: Guid -> version: int -> Application option
     
 type public InMemoryApplicationStore() =
     let latest applications =
@@ -29,6 +32,10 @@ type public InMemoryApplicationStore() =
             this._saveOrUpdate app this._save this._update
 
         member this.All() = this._applications
+        
+        member this.Get(id) (version) =
+            this._applications
+            |> List.tryFind(fun a -> a.Id = id && a.Version = version)
             
     member private this._saveOrUpdate app (save : Application -> Application) (update : Application -> Application) =
         let me = this :> IApplicationStore

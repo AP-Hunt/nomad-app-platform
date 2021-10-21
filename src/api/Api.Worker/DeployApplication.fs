@@ -1,32 +1,34 @@
 module Api.Worker.DeployApplication
 
+open System
 open System.IO
+open Api.Domain.Applications
 open Api.Domain.Deployment
 open Handlers
 open Api.Domain.Buildpacks
 open Api.Domain.ContainerImages
 open BuildpackExecutor
 
-let createContainerImage (logger : Api.Config.Logging.Logger) (message : Api.Domain.Messages.DeployAppMessage) = 
+let createContainerImage (logger : Api.Config.Logging.Logger) (sourceBundlePath : string) (app : Application) = 
     logger.Info("create-container-image")
     let appImage =
         BuildpackExecutor.defaults
         |> buildpack "gcr.io/paketo-buildpacks/go" 
         |> registryAddress "localhost:6000"
-        |> sourcePath message.SourcePath
+        |> sourcePath sourceBundlePath
         |> (fun settings ->
             logger.Info(
                 "create-container-image",
                 {|
-                    Id = message.AppId;
-                    Version = message.Version;
+                    Id = app.Id;
+                    Version = app.Version;
                     BuildpackSettings = settings;
                     SourcePath = sourcePath;
                 |}
                 )
             settings
         )
-        |> run message.AppId (message.Version.ToString())
+        |> run (app.Id.ToString()) (app.Version.ToString())
     
     match appImage with
     | Error(err) ->
@@ -52,7 +54,7 @@ let saveStateFile (config : Api.Config.Configuration) (appId : string) stateFile
 let terraformDeploy
     (logger : Api.Config.Logging.Logger)
     (config : Api.Config.Configuration)
-    (message : Api.Domain.Messages.DeployAppMessage)
+    (app : Application)
     (imageReference : string)
     =
     logger.Info("terraform-deploy")
@@ -69,8 +71,8 @@ let terraformDeploy
             logger.Info("terraform-working-dir", {|WorkingDir = wd|})
             Ok(wd)
         )
-        |> Result.bind (tfVar "app_id" message.AppId)
-        |> Result.bind (tfVar "app_name" message.AppName)
+        |> Result.bind (tfVar "app_id" (app.Id.ToString()))
+        |> Result.bind (tfVar "app_name" app.Name)
         |> Result.bind (tfVar "nomad_api" config.Nomad.ApiAddress)
         |> Result.bind (tfVar "container_image" containerImage)
        
@@ -85,23 +87,31 @@ let terraformDeploy
         match applyResult with
         | Error (wd, err) ->
             logger.Error("terraform-apply", err)
-            saveStateFile config message.AppId (Terraform.stateFile wd)
+            saveStateFile config (app.Id.ToString()) (Terraform.stateFile wd)
             Error(err)
         | Ok(wd) ->
             logger.Info("terraform-applied")
-            saveStateFile config message.AppId (Terraform.stateFile wd)
+            saveStateFile config (app.Id.ToString()) (Terraform.stateFile wd)
             Ok(wd)
             
-let private deployApplication (logger : Api.Config.Logging.Logger) (config : Api.Config.Configuration) (message : Api.Domain.Messages.DeployAppMessage) : obj =
+let private deployApplication (logger : Api.Config.Logging.Logger) (config : Api.Config.Configuration) (appStore: Api.Domain.Stores.IApplicationStore) (message : Api.Domain.Messages.DeployAppMessage) : obj =
     logger.Info("deploy-application", {|AppId = message.AppId; Version = message.Version|})
-    let result =
-        createContainerImage logger message
-        |> Result.bind (publishContainerImage logger)
-        |> Result.bind (terraformDeploy logger config message)
     
-    match result with
-    | Ok _ -> logger.Info("deployed-application", {|AppId = message.AppId; Version = message.Version|})
-    | Error err -> logger.Error("deploy-application", err)
+    let maybeApplication = appStore.Get message.AppId message.Version
+    
+    match maybeApplication with
+    | None ->
+        logger.Error("app-not-found", {|AppId = message.AppId; Version = message.Version|})
+    | Some app ->
+        let result =
+            app
+            |> createContainerImage logger message.SourcePath
+            |> Result.bind (publishContainerImage logger)
+            |> Result.bind (terraformDeploy logger config app)
+        
+        match result with
+        | Ok _ -> logger.Info("deployed-application", {|AppId = app.Id; Version = app.Version|})
+        | Error err -> logger.Error("deploy-application", err)
     null
 
-let deployApplicationHandler logger config = asMessageHandler (deployApplication logger config)
+let deployApplicationHandler logger config appStore = asMessageHandler (deployApplication logger config appStore)
