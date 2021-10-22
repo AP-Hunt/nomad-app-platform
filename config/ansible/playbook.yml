@@ -100,3 +100,13 @@
         num_servers: "{{ groups['nomad_servers'] | length }}"
         server_ips: "{{ hostvars | json_query('*.private_ip') }}"
         allocation_cidr: "{{ hostvars[inventory_hostname].cidr_allocation }}"
+
+- hosts: postgres_hosts
+  roles:
+    - role: postgres
+      vars: 
+        name: "api"
+        user: "api"
+        password: "nomad-api"
+        db: "api"
+        port: 5432

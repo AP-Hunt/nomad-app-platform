@@ -1,0 +1,6 @@
+---
+name: "postgres"
+user: "root"
+password: "toor"
+db: "postgres"
+port: 5432

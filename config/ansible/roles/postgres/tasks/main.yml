@@ -1,0 +1,35 @@
+---
+- name: "Create Postgres directories"
+  become: true
+  become_user: root
+  ansible.builtin.file:
+    path: "{{item}}"
+    state: directory
+    owner: nomad
+    group: nomad
+  loop:
+    - "/opt/postgres"
+    - "/opt/postgres/data"
+    - "/opt/postgres/data/{{name}}"
+
+- become: true
+  become_user: root
+  ansible.builtin.apt:
+    name: python3-pip
+    update_cache: true
+
+- ansible.builtin.pip:
+    name: docker
+
+- name: "Run Postgres container"
+  community.docker.docker_container:
+    name: "postgres-{{name}}"
+    image: "postgres:13"
+    network_mode: host
+    volumes:
+      - "/opt/postgres/data/{{name}}:/var/lib/postgresql/data"
+    restart_policy: always
+    env:
+      POSTGRES_USER: "{{user}}"
+      POSTGRES_PASSWORD: "{{password}}"
+      POSTGRES_DB: "{{db}}"

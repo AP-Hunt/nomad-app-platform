@@ -22,7 +22,8 @@ instances = [
       :consul_server,
       :nomad_client,
       :etcd_member,
-      :calico_node
+      :calico_node,
+      :postgres_host
     ]
   },
   {
@@ -91,7 +92,8 @@ def build_ansible_groups(instances)
     "nomad_servers" => filter_by_role(instances, :nomad_server),
     "nomad_clients" => filter_by_role(instances, :nomad_client),
     "etcd_members" => filter_by_role(instances, :etcd_member),
-    "calico_nodes" => filter_by_role(instances, :calico_node)
+    "calico_nodes" => filter_by_role(instances, :calico_node),
+    "postgres_hosts" => filter_by_role(instances, :postgres_host),
   }
 end
 
