@@ -2,3 +2,5 @@ obj/
 bin/
 .idea/
 storage/
+publish/
+*.log

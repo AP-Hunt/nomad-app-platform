@@ -46,3 +46,23 @@ stop_postgres:
 .PHONY: config
 config:
 	./scripts/generate-config.sh
+
+dev:
+	$(eval export TARGET_REGISTRY ?= 192.168.33.1:6000)
+	$(eval export IMAGE_TAG=$(shell date +%s))
+
+web_container:
+	@docker build \
+	  -f ./Web.Dockerfile \
+	  -t "${TARGET_REGISTRY}/nomad-app-platform/web:${IMAGE_TAG}" \
+	  . > web.docker.build.log && \
+	docker push "${TARGET_REGISTRY}/nomad-app-platform/web:${IMAGE_TAG}" > web.docker.push.log
+	@echo "Published container ${TARGET_REGISTRY}/nomad-app-platform/web:${IMAGE_TAG}"
+
+worker_container:
+	@docker build \
+	  -f ./Worker.Dockerfile \
+	  -t "${TARGET_REGISTRY}/nomad-app-platform/worker:${IMAGE_TAG}" \
+	  . > worker.docker.build.log && \
+	docker push "${TARGET_REGISTRY}/nomad-app-platform/worker:${IMAGE_TAG}" > worker.docker.push.log
+	@echo "Published container ${TARGET_REGISTRY}/nomad-app-platform/worker:${IMAGE_TAG}"
