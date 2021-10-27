@@ -105,8 +105,8 @@
   roles:
     - role: postgres
       vars: 
-        name: "api"
-        user: "api"
-        password: "nomad-api"
-        db: "api"
-        port: 5432
+        service_name: "api"
+        db_user: "api"
+        db_password: "nomad-api"
+        db_name: "api"
+        db_port: 5432

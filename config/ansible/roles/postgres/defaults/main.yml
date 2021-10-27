@@ -1,6 +1,6 @@
 ---
-name: "postgres"
-user: "root"
-password: "toor"
-db: "postgres"
-port: 5432
+service_name: "postgres"
+db_user: "root"
+db_password: "toor"
+db_name: "postgres"
+db_port: 5432

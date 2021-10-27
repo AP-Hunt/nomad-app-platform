@@ -26,6 +26,7 @@
         - "/opt/nomad"
         - "/opt/nomad/bin"
         - "/opt/nomad/data"
+        - "/var/log/nomad"
 
     - name: "Copy binary"
       ansible.builtin.copy:

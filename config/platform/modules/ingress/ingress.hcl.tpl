@@ -5,7 +5,7 @@ job "ingress" {
     group "traefik" {
         network {
             port "http" {
-                static = 8080
+                static = 80
             }
 
             port "api" {
@@ -41,7 +41,7 @@ job "ingress" {
                 data = <<EOF
 [entryPoints]
     [entryPoints.http]
-    address = ":8080"
+    address = ":80"
     [entryPoints.traefik]
     address = ":4000"
 
