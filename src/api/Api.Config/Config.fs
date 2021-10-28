@@ -23,6 +23,7 @@ type DockerRegistryConfiguration = {
 [<CLIMutable>]
 type LoggingConfiguration = {
     LogPath: string
+    LogToStdOut: bool
 }
 
 [<CLIMutable>]

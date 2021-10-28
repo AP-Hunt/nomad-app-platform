@@ -12,12 +12,15 @@ type Logger(config : Api.Config.Configuration) =
         | None -> logger
         
     do
-        _logger <- (new LoggerConfiguration())
-            .WriteTo.File(new Serilog.Formatting.Compact.CompactJsonFormatter(), config.Logging.LogPath)
-            .WriteTo.Console(new Serilog.Formatting.Compact.CompactJsonFormatter())
-            .Enrich.FromLogContext()
-            .Destructure.FSharpTypes()
-            .CreateLogger()
+        let mutable loggerConfig = (new LoggerConfiguration()).Enrich.FromLogContext().Destructure.FSharpTypes()
+
+        match config.Logging.LogToStdOut with
+        | false ->
+            loggerConfig <- loggerConfig.WriteTo.File(Serilog.Formatting.Compact.CompactJsonFormatter(), config.Logging.LogPath)
+        | true ->
+            loggerConfig <- loggerConfig.WriteTo.Console(Serilog.Formatting.Compact.CompactJsonFormatter())
+            
+        _logger <- loggerConfig.CreateLogger()
     
     member this.Verbose (message : string, ?context : obj) =
         _logger.ForContext("context", context, true).Verbose(message)

@@ -2,6 +2,7 @@ module Worker
 
 open System
 
+open Api.Config
 open Api.Domain.Stores
 open Api.Worker
 open ServiceStack.Messaging.Redis
@@ -10,6 +11,8 @@ open ServiceStack.Redis
 [<EntryPoint>]
 let main argv =
     let config = Api.Config.Parsing.fromFile argv.[0]
+    Storage.ensureStoragePaths config
+    
     let logger = new Api.Config.Logging.Logger(config)
     
     let redisFactory = new PooledRedisClientManager(config.MessageQueue.RedisAddress) 

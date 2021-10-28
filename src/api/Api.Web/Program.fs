@@ -1,5 +1,6 @@
 ﻿module api
 
+open Api.Config
 open Api.Domain.Stores
 open Api.Web.Services
 
@@ -8,16 +9,12 @@ open Serilog.Sinks.SystemConsole
 open Serilog.Sinks.File
 open Falco.HostBuilder
 
-let createLogger (config : Api.Config.Configuration) =
-    (new LoggerConfiguration())
-        .WriteTo.File(new Serilog.Formatting.Compact.CompactJsonFormatter(), config.Logging.LogPath)
-        .WriteTo.Console(new Serilog.Formatting.Compact.CompactJsonFormatter())
-        .Enrich.FromLogContext()
-        .Destructure.FSharpTypes()
-        .CreateLogger()
 
 let startWebHost (args : string[]) = 
     let config = Api.Config.Parsing.fromFile (args.[0])
+
+    Storage.ensureStoragePaths config
+
     let logger = new Api.Config.Logging.Logger(config)
     
     let dbContext = new Api.Domain.Persistence.Context(config.Database.ConnectionString)

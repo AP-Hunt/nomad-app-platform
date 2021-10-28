@@ -17,7 +17,8 @@ cat << EOF > storage/config.json
         "RegistryAddress": "localhost:6000"
     },
     "Logging": {
-        "LogPath": "$(pwd)/storage/logs"
+        "LogPath": "$(pwd)/storage/logs",
+        "LogToStdOut": false
     },
     "Nomad": {
         "ApiAddress": "http://192.168.33.10:4646",
