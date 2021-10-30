@@ -46,12 +46,12 @@ module BuildpackExecutor =
                 RedirectStandardOutput = true,
                 Arguments = (String.concat " " [
                     "build";
-                    name
+                    imageName;
                     "--quiet";
                     "--builder"; settings.Builder |> Option.get ;
                     "--buildpack"; settings.Buildpack |> Option.get ;
                     "--path"; settings.SourcePath |> Option.get
-                    "--tag"; imageName
+                    "--publish";
                 ])
             )
             

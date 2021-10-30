@@ -9,12 +9,12 @@ open Api.Domain.Buildpacks
 open Api.Domain.ContainerImages
 open BuildpackExecutor
 
-let createContainerImage (logger : Api.Config.Logging.Logger) (sourceBundlePath : string) (app : Application) = 
+let createContainerImage (logger : Api.Config.Logging.Logger) (sourceBundlePath : string) (registry : string) (app : Application) = 
     logger.Info("create-container-image")
     let appImage =
         BuildpackExecutor.defaults
         |> buildpack "gcr.io/paketo-buildpacks/go" 
-        |> registryAddress "localhost:6000"
+        |> registryAddress registry
         |> sourcePath sourceBundlePath
         |> (fun settings ->
             logger.Info(
@@ -38,16 +38,6 @@ let createContainerImage (logger : Api.Config.Logging.Logger) (sourceBundlePath 
         logger.Info("created-container-image")
         Ok(imageName)
         
-let publishContainerImage (logger : Api.Config.Logging.Logger) appImage =
-    logger.Info("publish-container-image")
-    match ContainerImages.push(appImage) with
-    | Ok(imageReference) ->
-        logger.Info("published-container-image", {| Image = imageReference |})
-        Ok(imageReference)
-    | Error(err) ->
-        logger.Error("publish-container-image", err)
-        Error(err)
- 
 let saveStateFile (config : Api.Config.Configuration) (appId : string) stateFilePath =
     File.Copy(stateFilePath, Path.Combine(config.BlobStore.TerraformStatePath, appId+".tfstate"))
     
@@ -105,8 +95,7 @@ let private deployApplication (logger : Api.Config.Logging.Logger) (config : Api
     | Some app ->
         let result =
             app
-            |> createContainerImage logger message.SourcePath
-            |> Result.bind (publishContainerImage logger)
+            |> createContainerImage logger message.SourcePath config.Nomad.DockerRegistry.RegistryAddress
             |> Result.bind (terraformDeploy logger config app)
         
         match result with
