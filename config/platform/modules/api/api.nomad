@@ -30,57 +30,15 @@ job "api" {
             }
         }
     }
-
-    group "worker" {
-        task "worker" {
-            driver = "docker" 
-
-            config {
-                image = "192.168.33.1:6000/nomad-app-platform/worker:1635092060"
-
-                volumes = [
-                    "local/config.json:/app/config.json"
-                ]
-            }
-
-            template {
-                destination = "local/config.json"
-                data = <<EOF
-{
-    "BlobStore": {
-        "SourceBundleStoragePath": "/app/storage/blob/source-bundles",
-        "TerraformStatePath": "/app/storage/blob/terraform-state"
-    },
-    "Database": {
-        "ConnectionString": "Host=192.168.33.11;Port=5432;Database=api;Username=api;Password=nomad-api;SslMode=Disable;"
-    },
-    "DockerRegistry": {
-        "RegistryAddress": "192.168.33.1:6000"
-    },
-    "Logging": {
-        "LogPath": "/app/storage/logs"
-    },
-    "Nomad": {
-        "ApiAddress": "http://192.168.33.10:4646",
-        "DockerRegistry": {
-            "RegistryAddress": "192.168.33.1:6000"
-        }
-    },
-    "MessageQueue": {
-        "RedisAddress": "redis-api.services.paas.dev:6379",
-        "RetryCount": 2
-    }
-}
-EOF
-            }
-        }
-    }
-  
-
+    
     group "web" {
         network {
             mode = "cni/calico"
             port "http" { to = 80 }
+
+            dns {
+                servers = ["192.168.33.10"]
+            }
         }
             
         service {
@@ -107,7 +65,9 @@ EOF
             driver = "docker" 
 
             config {
-                image = "192.168.33.1:6000/nomad-app-platform/web:1635092060"
+                image = "192.168.33.1:6000/nomad-app-platform/web:latest"
+                force_pull = true
+
                 ports = ["http"]
                 volumes = [
                     "local/config.json:/app/config.json"
@@ -119,8 +79,8 @@ EOF
                 data = <<EOF
 {
     "BlobStore": {
-        "SourceBundleStoragePath": "/app/storage/blob/source-bundles",
-        "TerraformStatePath": "/app/storage/blob/terraform-state"
+        "SourceBundleStoragePath": "/alloc/data/blob/source-bundles",
+        "TerraformStatePath": "/alloc/data/blob/terraform-state"
     },
     "Database": {
         "ConnectionString": "Host=192.168.33.11;Port=5432;Database=api;Username=api;Password=nomad-api;SslMode=Disable;"
@@ -129,7 +89,8 @@ EOF
         "RegistryAddress": "192.168.33.1:6000"
     },
     "Logging": {
-        "LogPath": "/app/storage/logs"
+        "LogPath": "/app/storage/logs",
+        "LogToStdOut": true
     },
     "Nomad": {
         "ApiAddress": "http://192.168.33.10:4646",
@@ -138,7 +99,55 @@ EOF
         }
     },
     "MessageQueue": {
-        "RedisAddress": "redis-api.services.paas.dev:6379",
+        "RedisAddress": "redis-api.service.paas.dev:6379",
+        "RetryCount": 2
+    }
+}
+EOF
+            }
+        }
+
+        task "worker" {
+            driver = "docker" 
+
+            config {
+                image = "192.168.33.1:6000/nomad-app-platform/worker:latest"
+                force_pull = true
+
+                volumes = [
+                    "local/config.json:/app/config.json",
+                    "/var/run/docker.sock:/var/run/docker.sock"
+                ]
+
+                interactive = true
+            }
+
+            template {
+                destination = "local/config.json"
+                data = <<EOF
+{
+    "BlobStore": {
+        "SourceBundleStoragePath": "/alloc/data/blob/source-bundles",
+        "TerraformStatePath": "/alloc/data/blob/terraform-state"
+    },
+    "Database": {
+        "ConnectionString": "Host=192.168.33.11;Port=5432;Database=api;Username=api;Password=nomad-api;SslMode=Disable;"
+    },
+    "DockerRegistry": {
+        "RegistryAddress": "192.168.33.1:6000"
+    },
+    "Logging": {
+        "LogPath": "/app/storage/logs",
+        "LogToStdOut": true
+    },
+    "Nomad": {
+        "ApiAddress": "http://192.168.33.10:4646",
+        "DockerRegistry": {
+            "RegistryAddress": "192.168.33.1:6000"
+        }
+    },
+    "MessageQueue": {
+        "RedisAddress": "redis-api.service.paas.dev:6379",
         "RetryCount": 2
     }
 }
