@@ -36,6 +36,18 @@
         group: consul
         mode: "771"
 
+    - name: "Grant Consul permission to bind to privileged ports"
+      become: true
+      become_user: root
+      ansible.builtin.shell: |
+        setcap CAP_NET_BIND_SERVICE=+eip /opt/consul/bin/consul
+
+- name: "Add 10.0.0.2 as an address to enp0s3"
+  become: true
+  become_user: root
+  ansible.builtin.shell: |
+    ip address add 10.0.0.2/24 dev enp0s3
+
 - name: "Configure Consul"
   become: true
   become_user: root
