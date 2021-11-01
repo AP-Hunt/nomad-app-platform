@@ -43,7 +43,7 @@ func probeRequest() (*probeResponse, error) {
 	client := http.Client{}
 	req := http.Request{}
 	req.Method = "GET"
-	req.URL = &url.URL{Scheme: "http", Host: "paas.dev:8080"}
+	req.URL = &url.URL{Scheme: "http", Host: "paas.dev"}
 	req.Host = "ingress-probe.paas.dev"
 
 	resp, err := client.Do(&req)
