@@ -10,6 +10,9 @@ job "${app_id}" {
     network {
       mode = "cni/calico"
       port "http" { to = 80 }
+      dns {
+        servers = ["10.0.0.2"]
+      }
     }
     
     task "web" {
