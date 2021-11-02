@@ -46,7 +46,9 @@
   become: true
   become_user: root
   ansible.builtin.shell: |
-    ip address add 10.0.0.2/24 dev enp0s3
+    if ! ip addr | grep "10.0.0.2"; then
+      ip address add 10.0.0.2/24 dev enp0s3
+    fi
 
 - name: "Configure Consul"
   become: true

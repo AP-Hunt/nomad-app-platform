@@ -99,7 +99,7 @@
         group: nomad
         mode: "771"
 
-    - name: "Install Calico CNI"
+    - name: "Install Calico CNI IPAM"
       ansible.builtin.get_url:
         force: false
         url: https://github.com/projectcalico/cni-plugin/releases/download/v3.20.2/calico-ipam-amd64
