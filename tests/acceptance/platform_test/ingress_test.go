@@ -14,22 +14,19 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var (
-	nomadApi *api.Client
-	jobId    string
-)
+func allTasksAreRunning(nomadApi *api.Client, evalID string) func(Gomega) bool {
+	return func(g Gomega) bool {
+		allocations, _, err := nomadApi.Evaluations().Allocations(evalID, &api.QueryOptions{})
+		g.Expect(err).ToNot(HaveOccurred())
 
-func allTasksAreRunning(nomadApi *api.Client, evalID string) bool {
-	allocations, _, err := nomadApi.Evaluations().Allocations(evalID, &api.QueryOptions{})
-	Expect(err).ToNot(HaveOccurred())
-
-	for _, alloc := range allocations {
-		if alloc.ClientStatus != "running" {
-			return false
+		for _, alloc := range allocations {
+			if alloc.ClientStatus != "running" {
+				return false
+			}
 		}
-	}
 
-	return true
+		return true
+	}
 }
 
 type probeResponse struct {
@@ -69,7 +66,50 @@ func probeRequest() (*probeResponse, error) {
 	return &response, nil
 }
 
+type nodesAndInstances struct {
+	nodes     map[string]bool
+	instances map[string]bool
+}
+
+func (n *nodesAndInstances) AddNode(node string) {
+	parts := strings.Split(node, "-")
+	ipComponent := strings.Join(parts[1:], ".")
+	n.nodes[ipComponent] = true
+}
+
+func (n *nodesAndInstances) GetNodes() []string {
+	nodes := make([]string, len(n.nodes))
+
+	i := 0
+	for k, _ := range n.nodes {
+		nodes[i] = k
+		i = i + 1
+	}
+
+	return nodes
+}
+
+func (n *nodesAndInstances) AddInstance(instance string) {
+	n.instances[instance] = true
+}
+
+func (n *nodesAndInstances) GetInstances() []string {
+	instances := make([]string, len(n.instances))
+
+	i := 0
+	for k, _ := range n.instances {
+		instances[i] = k
+		i = i + 1
+	}
+
+	return instances
+}
+
 var _ = Describe("Ingress", func() {
+	var (
+		nomadApi *api.Client
+		jobId    string
+	)
 
 	BeforeEach(func() {
 		apiConfig := api.Config{
@@ -101,58 +141,31 @@ var _ = Describe("Ingress", func() {
 		Expect(err).ToNot(HaveOccurred())
 	})
 
-	It("can load balances across all application instances", func() {
-		// Make an HTTP request for the probe
-		// repeatedly, collecting the unique
-		// instances which come back.
-		instances := map[string]bool{}
-		Eventually(func() []string {
-			response, err := probeRequest()
-
-			if err == errNotFound {
-				return []string{}
-			}
-			Expect(err).ToNot(HaveOccurred())
-			instances[response.Index] = true
-
-			names := []string{}
-			for n, _ := range instances {
-				names = append(names, n)
-			}
-
-			return names
-		}, 2*time.Minute, 1*time.Second).Should(ConsistOf("0", "1", "2"))
-	})
-
-	It("load balances across all nodes", func() {
+	It("can load balances across all application instances and across all nodes", func() {
 		By("assuming that the application is present on all nodes")
 
-		// Make an HTTP request for the probe
-		// repeatedly, collecting the unique
-		// node names which come back.
-		nodes := map[string]bool{}
-		Eventually(func() []string {
+		result := nodesAndInstances{
+			nodes:     map[string]bool{},
+			instances: map[string]bool{},
+		}
+		Eventually(func(g Gomega) int {
 			response, err := probeRequest()
-			if err == errNotFound {
-				return []string{}
-			}
-			Expect(err).ToNot(HaveOccurred())
 
-			parts := strings.Split(response.Node, "-")
-			ipComponent := strings.Join(parts[1:], ".")
-
-			nodes[ipComponent] = true
-
-			names := []string{}
-			for n, _ := range nodes {
-				names = append(names, n)
+			if err != nil {
+				g.Expect(err).To(MatchError(errNotFound))
+				return 0
 			}
 
-			return names
-		}, 2*time.Minute, 1*time.Second).Should(ConsistOf(
-			"192.168.33.10",
-			"192.168.33.11",
-			"192.168.33.12",
-		))
+			result.AddInstance(response.Index)
+			result.AddNode(response.Node)
+			g.Expect(result.GetInstances()).To(ConsistOf("0", "1", "2"))
+			g.Expect(result.GetNodes()).To(ConsistOf(
+				"192.168.33.10",
+				"192.168.33.11",
+				"192.168.33.12",
+			))
+
+			return len(result.GetNodes())
+		}, 5*time.Minute, 1*time.Second).Should(Equal(3))
 	})
 })

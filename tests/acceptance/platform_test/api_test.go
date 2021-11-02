@@ -6,7 +6,6 @@ import (
 	"io"
 	"io/ioutil"
 	"path"
-	"strconv"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -15,9 +14,8 @@ import (
 	"bytes"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
-
-	"github.com/heroku/docker-registry-client/registry"
 )
 
 func createZipArchive(sourceFilesPath string, fileName string) (*os.File, error) {
@@ -89,15 +87,13 @@ func createMultipartFormBody(archive *os.File) (*bytes.Buffer, string, error) {
 }
 
 type AppResponse struct {
-	Id struct {
-		Value string
-	}
+	Id      string
 	Name    string
 	Version int
 }
 
-var _ = PDescribe("Api", func() {
-	It("Accepts a zip file containing the source, and creates a container image from it", func() {
+var _ = Describe("Api", func() {
+	It("Accepts a zip file containing the source, and runs the application on the platform", func() {
 		sourceArchive, err := createZipArchive("testdata/simple_go_app", "go-app.zip")
 		Expect(err).ToNot(HaveOccurred())
 		defer sourceArchive.Close()
@@ -107,7 +103,7 @@ var _ = PDescribe("Api", func() {
 
 		httpClient := http.Client{}
 
-		req, err := http.NewRequest("POST", "http://localhost:5000/apps/", body)
+		req, err := http.NewRequest("POST", "http://api.paas.dev/apps/", body)
 		Expect(err).ToNot(HaveOccurred())
 
 		req.Header.Set("Content-Type", contentType)
@@ -123,39 +119,19 @@ var _ = PDescribe("Api", func() {
 		err = json.Unmarshal(respBytes, &appResponse)
 		Expect(err).ToNot(HaveOccurred())
 
-		Eventually(func() bool {
-			hub, err := registry.New("http://localhost:6000", "", "")
+		Eventually(func() int {
+			client := http.Client{}
+			req := http.Request{}
+			req.Method = "GET"
+			req.URL = &url.URL{Scheme: "http", Host: "paas.dev"}
+			req.Host = "go-app.paas.dev"
+
+			resp, err := client.Do(&req)
 			if err != nil {
-				return false
+				return -1
 			}
 
-			repos, err := hub.Repositories()
-			if err != nil {
-				return false
-			}
-
-			foundRepo := false
-			for _, repo := range repos {
-				if repo == appResponse.Id.Value {
-					foundRepo = true
-					break
-				}
-			}
-
-			tags, err := hub.Tags(appResponse.Id.Value)
-			if err != nil {
-				return false
-			}
-
-			foundTag := false
-			for _, tag := range tags {
-				if tag == strconv.Itoa(appResponse.Version) {
-					foundTag = true
-					break
-				}
-			}
-
-			return foundRepo && foundTag
-		}, 5*time.Minute, 10*time.Second).Should(BeTrue())
+			return resp.StatusCode
+		}, 15*time.Minute, 10*time.Second).Should(Equal(200))
 	})
 })
