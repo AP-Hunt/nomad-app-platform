@@ -1,0 +1,16 @@
+{
+    "dsn": "postgres://kratos:kratos@192.168.33.11:5433/kratos?sslmode=disable",
+
+    "identity": {
+        "default_schema_url": "file:///etc/kratos/id.schema.json"
+    },
+    "courier": {
+        "smtp": {
+            "connection_uri": "smtp://localhost:1234"
+        }
+    },
+
+    "selfservice": {
+        "default_browser_return_url": "localhost:9090"
+    }
+}

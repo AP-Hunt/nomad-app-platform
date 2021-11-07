@@ -53,6 +53,11 @@ node_test:
 	echo "Running tests on $$(hostname)" && \
 	CGO_ENABLED=0 ginkgo -p -v internal_test/
 
+teardown:
+	vagrant destroy -f
+
+rebuild: teardown start
+
 deploy: nomad registry ingress
 
 ingress:

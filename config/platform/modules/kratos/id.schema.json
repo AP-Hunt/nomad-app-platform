@@ -1,0 +1,26 @@
+{
+    "$id": "http://github.com/AP-Hunt/nomad-app-platform/schemas/v1/user.identity.json",
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Basic user (v1)",
+    "type": "object",
+    "properties": {
+        "traits": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "title": "Email",
+                    "type": "string",
+                    "format": "email",
+
+                    "ory.sh/kratos": {
+                        "credentials": {
+                            "password": {
+                                "identifier": true
+                            }
+                        }
+                    }       
+                }
+            }
+        }
+    }
+}
