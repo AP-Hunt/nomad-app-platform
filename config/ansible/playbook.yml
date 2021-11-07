@@ -110,3 +110,11 @@
         db_password: "nomad-api"
         db_name: "api"
         db_port: 5432
+
+    - role: postgres
+      vars:
+        service_name: "kratos"
+        db_user: "kratos"
+        db_password: "kratos"
+        db_name: "kratos"
+        db_port: 5433

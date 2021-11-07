@@ -25,10 +25,11 @@
   community.docker.docker_container:
     name: "postgres-{{service_name}}"
     image: "postgres:13"
-    network_mode: host
     volumes:
       - "/opt/postgres/data/{{service_name}}:/var/lib/postgresql/data"
     restart_policy: always
+    published_ports:
+      - "{{db_port}}:5432"
     env:
       POSTGRES_USER: "{{db_user}}"
       POSTGRES_PASSWORD: "{{db_password}}"
