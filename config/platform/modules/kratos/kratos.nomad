@@ -10,12 +10,14 @@ job "kratos" {
             }
 
             port "admin" {
-                to = "4434"
+                to = 4434
             }
         }
 
         service {
             name = "kratos"
+            address_mode = "alloc"
+            port = "http"
             check {
                 name        = "alive"
                 type        = "http"
@@ -27,6 +29,25 @@ job "kratos" {
 
             tags = [
                 "traefik.http.routers.kratos.rule=Host(`identity.paas.dev`)",
+                "traefik.enable=true"
+            ]
+        }
+
+        service {
+            name = "kratos-admin"
+            address_mode = "alloc"
+            port = "admin"
+            check {
+                name        = "alive"
+                type        = "http"
+                port        = "admin"
+                path        = "/health/ready"
+                interval    = "10s"
+                timeout     = "2s"
+            }
+
+            tags = [
+                "traefik.http.routers.kratos-admin.rule=Host(`admin.identity.paas.dev`)",
                 "traefik.enable=true"
             ]
         }
