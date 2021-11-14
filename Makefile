@@ -116,3 +116,7 @@ curl-php-app:
 	@curl php-app.service.apps.internal
 	@curl php-app.service.apps.internal
 	@curl php-app.service.apps.internal
+
+shell:
+	@docker build -q -f kratos.dockerfile -t "nomad-app-platform-shell:latest" .
+	@docker run -it --network host --env NOMAD_ADDR=http://192.168.33.10:4646 --env CONSUL_HTTP_ADDR=http://192.168.33.10:8500 --env KRATOS_ADMIN_URL=http://admin.identity.paas.dev  -v "$$(pwd):/vagrant"  nomad-app-platform-shell:latest
