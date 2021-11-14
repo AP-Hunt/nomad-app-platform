@@ -50,7 +50,7 @@ Vagrant.configure("2") do |config|
       node.vm.network "private_network", ip: instance[:ip]
       node.vm.synced_folder ".", "/vagrant"
 
-      node.hostmanager.aliases = %w(paas.dev)
+      node.hostmanager.aliases = %w(paas.dev api.paas.dev identity.paas.dev admin.identity.paas.dev)
 
       node.vm.provider "virtualbox" do |vb|
         vb.gui = false
