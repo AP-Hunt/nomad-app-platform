@@ -21,19 +21,6 @@
     groups:
       - docker
 
-- name: "Install Pack PPA"
-  become: true
-  become_user: root
-  ansible.builtin.apt_repository:
-    repo: "ppa:cncf-buildpacks/pack-cli"
-
-- name: "Install Pack CLI"
-  become: true
-  become_user: root
-  ansible.builtin.apt:
-    update_cache: true
-    name: pack-cli
-
 - ansible.builtin.stat:
     path: /usr/local/bin/go/bin/go
   register: go_exe
@@ -53,6 +40,9 @@
   become_user: root
   ansible.builtin.apt:
     update_cache: true
-    name: 
+    name:
       - make
       - build-essential
+
+- name: "Reset SSH connection for Vagrant group membership to take effect"
+  ansible.builtin.meta: reset_connection
