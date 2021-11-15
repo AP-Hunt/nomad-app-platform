@@ -30,10 +30,28 @@ $(ETCD_EXE): inside_vagrant_vm
 	  etcd-v3.5.0-linux-amd64/etcd
 	rm bin/etcd.tar.gz
 
-start: vagrant_up platform_up acceptance_test
+start: vagrant_up local_registry application_containers platform_up acceptance_test
 
 vagrant_up:
 	vagrant up --provision
+
+local_registry:
+	@if ! docker ps --format "{{.Names}}" | grep -q "registry"; then \
+		docker run \
+			-d \
+			--restart always \
+			--ip 192.168.33.1 \
+			-p 6000:5000 \
+			--name registry \
+			registry:2; \
+	fi
+
+application_containers:
+	@( \
+		cd src/api/ && make dev web_container worker_container \
+	) && ( \
+		cd src/login/ && make dev container \
+	)
 
 platform_up:
 	cd config/platform && \
@@ -45,11 +63,13 @@ acceptance_test:
 		vagrant ssh "$${node}" -c "cd /vagrant && make node_test"; \
 	done; \
 	cd tests/acceptance && \
+	go mod vendor && \
 	ginkgo -p -v platform_test/
 
 node_test:
 	@go install github.com/onsi/ginkgo/ginkgo@latest && \
 	cd tests/acceptance && \
+	go mod vendor && \
 	echo "Running tests on $$(hostname)" && \
 	CGO_ENABLED=0 ginkgo -p -v internal_test/
 
